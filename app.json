@@ -8,14 +8,17 @@
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "assetBundlePatterns": ["assets/*"],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.yourdomain.myapp"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "xyz.virajdoshi.reelz"
     },
     "web": {
       "bundler": "metro",
@@ -25,12 +28,31 @@
     "plugins": [
       "expo-router",
       [
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps.16636073917-8ssm75468fc62h1ipukmjp5mh3pghtoh"
+        }
+      ],
+      [
         "expo-splash-screen",
         {
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
+        }
+      ],
+      [
+        "react-native-video",
+        {
+          "enableNotificationControls": true,
+            "androidExtensions": {
+              "useExpoPlayerIMA": true,
+              "useExoplayerRtsp": true,
+              "useExoplayerSmoothStreaming": true,
+              "useExoplayerHls": true,
+              "useExoplayerDash": true
+          }
         }
       ]
     ],
