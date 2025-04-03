@@ -1,21 +1,38 @@
-import React, { useEffect } from "react";
-import { Text, View } from "react-native";
-import "react-native-gesture-handler";
-// import { GoogleSignin } from "@react-native-google-signin/google-signin";
+import { Redirect } from 'expo-router';
+import { useEffect, useState } from 'react';
 
+import { getToken } from '@/utils/storage';
+import { useDispatch, useSelector } from 'react-redux';
+import { setJwtToken } from '@/state/slices/userTokenSlice';
 
 export default function Index() {
+  const dispatch = useDispatch();
+  // const token = useSelector((state: any) => state.reelzUserToken.jwtToken);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
   useEffect(() => {
-    // GoogleSignin.configure({
-    //   webClientId: process.env.GOOGLE_WEB_CLIENT_ID,
-    //   forceCodeForRefreshToken: true,
-    //   offlineAccess: false,
-    //   iosClientId: process.env.GOOGLE_IOS_CLIENT_ID
-    // })
-  })
-  return (
-    <View style={{flex: 1,justifyContent: "center",alignItems: "center"}}>
-      <Text>Apps</Text>
-    </View>
-  );
+    const config = async () => {
+      const token = await getToken('reelzUserToken')
+      console.log("token is:", !!token);
+
+      if (!!token) {
+        setIsLoggedIn(true);
+        dispatch(setJwtToken(token)); //save the token in redux store for faster access
+        console.log("we have the token");
+      } else {
+        console.log("there is no token, so no user logged in");
+      }
+      setIsLoading(false);
+    }
+
+    config();
+  }, []);
+
+  console.log("there is a user:",  isLoggedIn);
+  
+  if(isLoading) {
+    return (<></>);
+  }
+  return <Redirect href={isLoggedIn ? '/(tabs)/home' : '/(auth)/login'} />;
 }

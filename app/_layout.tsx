@@ -1,16 +1,27 @@
-import { mergedStacks } from "@/navigation/ScreenCollection";
-import { Stack } from "expo-router";
+import { Stack } from 'expo-router/stack';
+import { Provider } from "react-redux";
+import { useEffect } from 'react';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
-export default function RootLayout() {
+import { ThemeProvider } from '@/context/themeContext';
+import store from '@/state/store';
+
+export default function Layout() {
+
+  useEffect(() => {}, []);
+
   return (
-    <Stack screenOptions={{}}>
-      {/* <Stack.Screen name="index" /> */}
-      <Stack.Screen name="(tabs)" />
-      {/* {mergedStacks.map((screen, index) => {
-        return (
-          <Stack.Screen key={index} name={screen.name} />
-        );
-      })} */}
-    </Stack>
+    <GestureHandlerRootView>
+      <Provider store={store}>
+        <ThemeProvider>
+          <Stack screenOptions={{
+            headerShown: false
+          }}>
+            <Stack.Screen name="/(tabs)/home" options={{ headerShown: false }} />
+            <Stack.Screen name="/(auth)/login" options={{ headerShown: false }} />
+          </Stack>
+        </ThemeProvider>
+      </Provider>
+    </GestureHandlerRootView>
   );
 }
