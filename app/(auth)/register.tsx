@@ -7,14 +7,13 @@ import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import { RFValue } from "react-native-responsive-fontsize";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
-import { Camera } from 'expo-camera';
-import * as ImagePicker from 'expo-image-picker';
 
-import { getMax, isEmailValid, isPasswordValid, postData, uploadImagetoS3 } from "@/utils";
+import { getMax, isEmailValid, isPasswordValid, openCamera, openGallery, postData, requestPermissions, uploadImagetoS3 } from "@/utils";
 import { placeholder } from "@/contants/assets";
-import { CustomTheme, useTheme } from "@/context/themeContext";
+import { useTheme } from "@/context/themeContext";
 import { TextField } from "@/components";
 import { saveToken } from "@/utils/storage";
+import { CustomTheme } from "@/utils/types";
 // import { setUser } from "@/state/slices/userSlice";
 
 const createStyles = (theme: CustomTheme) => StyleSheet.create({
@@ -31,7 +30,7 @@ const createStyles = (theme: CustomTheme) => StyleSheet.create({
 
 export default function RegisterScreen() {
   const baseurl = process.env.EXPO_PUBLIC_BASE_URL || "http://192.168.252.240:3000";
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
   const themeMode = useSelector((state: any) => state.theme.mode);
   const theme = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
@@ -54,91 +53,78 @@ export default function RegisterScreen() {
   const halfWidth = width / 2;
 
   useEffect(() => {
-    requestPermissions()
+    // requestPermissions()
+    async function getPermissions() {
+      const { cameraPermission, galleryPermission } = await requestPermissions();
+      setPermissions({ cameraPermission, galleryPermission });
+    }
+
+    getPermissions();
   }, []);
 
   function handleFormInput(value: string, changedData: string) {
     setUserData({ ...userData, [changedData]: value })
   }
 
-  const openCamera = async (hasCameraPermission: boolean) => {
-    if (!hasCameraPermission) {
-      Alert.alert('Permission Denied', 'Camera access is not granted.');
-      // requestPermissions();
-      return;
-    }
+  // const openCamera = async (hasCameraPermission: boolean) => {
+  //   if (!hasCameraPermission) {
+  //     Alert.alert('Permission Denied', 'Camera access is not granted.');
+  //     // requestPermissions();
+  //     return;
+  //   }
 
-    const result = await ImagePicker.launchCameraAsync({
-      quality: 0.5,
-      allowsEditing: true,
-    });
+  //   const result = await ImagePicker.launchCameraAsync({
+  //     quality: 0.5,
+  //     allowsEditing: true,
+  //   });
 
-    if (!result.canceled) {
-      const imgData = result.assets[0];
-      // setUserData({...userData, image: {
-      //   fileSize: imgData.fileSize || 0,
-      //   width: imgData.width, height: imgData.height,
-      //   mimeType: imgData.mimeType || "",
-      //   uri: imgData.uri
-      // }});
-      setUserImage({
-        fileSize: imgData.fileSize || 0,
-        width: imgData.width, height: imgData.height,
-        mimeType: imgData.mimeType || "",
-        uri: imgData.uri
-      })
-    }
-  };
+  //   if (!result.canceled) {
+  //     const imgData = result.assets[0];
+  //     // setUserData({...userData, image: {
+  //     //   fileSize: imgData.fileSize || 0,
+  //     //   width: imgData.width, height: imgData.height,
+  //     //   mimeType: imgData.mimeType || "",
+  //     //   uri: imgData.uri
+  //     // }});
+  //     setUserImage({
+  //       fileSize: imgData.fileSize || 0,
+  //       width: imgData.width, height: imgData.height,
+  //       mimeType: imgData.mimeType || "",
+  //       uri: imgData.uri
+  //     })
+  //   }
+  // };
 
   // Open gallery to choose a photo/GIF
-  const openGallery = async (hasGalleryPermission: boolean) => {
-    if (!hasGalleryPermission) {
-      Alert.alert('Permission Denied', 'Gallery access is not granted.');
-      return;
-    }
+  // const openGallery = async (hasGalleryPermission: boolean) => {
+  //   if (!hasGalleryPermission) {
+  //     Alert.alert('Permission Denied', 'Gallery access is not granted.');
+  //     return;
+  //   }
 
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ["images", "livePhotos"], // Options: 'images', 'videos', 'all'
-      allowsEditing: true,
-      quality: 0.5, //idc about the quality of the profile photo
-    });
+  //   const result = await ImagePicker.launchImageLibraryAsync({
+  //     mediaTypes: ["images", "livePhotos"], // Options: 'images', 'videos', 'all'
+  //     allowsEditing: true,
+  //     quality: 0.5, //idc about the quality of the profile photo
+  //   });
 
-    if (!result.canceled) {
-      // console.log(result.assets[0]);
-      const imgData = result.assets[0];
-      // setUserData({...userData, image: {
-      //   fileSize: imgData.fileSize || 0,
-      //   width: imgData.width, height: imgData.height,
-      //   mimeType: imgData.mimeType || "",
-      //   uri: imgData.uri
-      // }});
-      setUserImage({
-        fileSize: imgData.fileSize || 0,
-        width: imgData.width, height: imgData.height,
-        mimeType: imgData.mimeType || "",
-        uri: imgData.uri
-      })
-    }
-  };
-
-  // Request camera and gallery permissions
-  const requestPermissions = async () => {
-    // Request Camera Permission
-    const cameraStatus = await Camera.requestCameraPermissionsAsync();
-    // setPermissions({...permissions, cameraPermission: cameraStatus.status === 'granted'});
-
-    // Request Media Library (Gallery) Permission
-    const galleryStatus = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    setPermissions({ galleryPermission: galleryStatus.status === 'granted', cameraPermission: cameraStatus.status === 'granted' });
-
-    if (cameraStatus.status !== 'granted' || galleryStatus.status !== 'granted') {
-      Alert.alert(
-        'Permissions Required',
-        'Camera and Gallery access is required to use this feature.',
-        [{ text: 'OK' }]
-      );
-    }
-  };
+  //   if (!result.canceled) {
+  //     // console.log(result.assets[0]);
+  //     const imgData = result.assets[0];
+  //     // setUserData({...userData, image: {
+  //     //   fileSize: imgData.fileSize || 0,
+  //     //   width: imgData.width, height: imgData.height,
+  //     //   mimeType: imgData.mimeType || "",
+  //     //   uri: imgData.uri
+  //     // }});
+  //     setUserImage({
+  //       fileSize: imgData.fileSize || 0,
+  //       width: imgData.width, height: imgData.height,
+  //       mimeType: imgData.mimeType || "",
+  //       uri: imgData.uri
+  //     })
+  //   }
+  // };
 
   return (
     <SafeAreaView style={{ backgroundColor: theme.background, flex: 1 }}>
@@ -151,11 +137,13 @@ export default function RegisterScreen() {
                 "How do you want to select the image?",
                 [{
                   text: "Take a photo",
-                  onPress: () => openCamera(permissions.cameraPermission)
+                  // onPress: () => openCamera(permissions.cameraPermission)
+                  onPress: () => openCamera(permissions.cameraPermission, setUserImage)
                 },
                 {
                   text: "Choose from gallery",
-                  onPress: () => openGallery(permissions.galleryPermission)
+                  // onPress: () => openGallery(permissions.galleryPermission)
+                  onPress: () => openGallery(permissions.galleryPermission, setUserImage)
                 }]
               )
             }}>
@@ -170,6 +158,7 @@ export default function RegisterScreen() {
               theme={theme}
               placeholder="Your username"
               isUsername={true}
+              styles={{marginTop: 16}}
             />
 
             {/* first and last name */}
@@ -181,6 +170,7 @@ export default function RegisterScreen() {
                   theme={theme}
                   label="First Name"
                   placeholder="John"
+                  styles={{marginTop: 16}}
                 />
 
               </View>
@@ -191,6 +181,7 @@ export default function RegisterScreen() {
                   theme={theme}
                   label="Last Name"
                   placeholder="Doe"
+                  styles={{marginTop: 16}}
                 />
               </View>
             </View>
@@ -203,6 +194,7 @@ export default function RegisterScreen() {
                 theme={theme}
                 label="Email"
                 keyboard="email-address"
+                styles={{marginTop: 16}}
               />
               <TextField
                 value={userData.password}
@@ -211,6 +203,7 @@ export default function RegisterScreen() {
                 isPassword={true}
                 placeholder="Really@,Complex_Password<3!"
                 theme={theme}
+                styles={{marginTop: 16}}
               />
               <TextField
                 value={confirmPass}
@@ -221,6 +214,7 @@ export default function RegisterScreen() {
                 }}
                 placeholder="Really@,Complex_Password<3!_again"
                 label="Confirm Password"
+                styles={{marginTop: 16}}
               />
             </View>
           </View>

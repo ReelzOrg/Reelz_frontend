@@ -5,12 +5,13 @@ import { ScrollView } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
 
-import { CustomTheme, useTheme } from "@/context/themeContext";
-import { SizedBox, TextField } from "@/components";
+import { useTheme } from "@/context/themeContext";
+import { TextField } from "@/components";
 import { isEmailValid, postData } from "@/utils";
 import { saveToken } from "@/utils/storage";
 import { router } from "expo-router";
 import { logo_t } from "@/contants/assets";
+import { CustomTheme } from "@/utils/types";
 // import { setUser } from "@/state/slices/userSlice";
 
 const createStyles = (theme: CustomTheme) => StyleSheet.create({
@@ -26,6 +27,7 @@ const createStyles = (theme: CustomTheme) => StyleSheet.create({
 });
 
 export default function LoginScreen() {
+  console.log("We ar ein login screen");
   const baseurl = process.env.EXPO_PUBLIC_BASE_URL || "http://192.168.252.240:3000"
   const dispatch = useDispatch();
   const themeMode = useSelector((state: any) => state.theme.mode);
@@ -54,6 +56,7 @@ export default function LoginScreen() {
               theme={theme}
               placeholder="Your email or username"
               keyboard="email-address"
+              styles={{marginTop: 16}}
             />
             <TextField
               value={loginForm.password}
@@ -61,6 +64,7 @@ export default function LoginScreen() {
               theme={theme}
               placeholder="Password"
               isPassword={true}
+              styles={{marginTop: 16}}
             />
             </View>
           </View>

@@ -1,10 +1,18 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+export interface userTokenObject {
+  jwtToken: string;
+}
+
+const initialState: userTokenObject = {
+  jwtToken: ''
+};
+
 const userTokenSlice = createSlice({
-  name: 'UserToken',
-  initialState: { jwtToken: '' },
+  name: 'userToken',
+  initialState: initialState,
   reducers: {
-    setJwtToken: (state, action) => {
+    setJwtToken: (state: userTokenObject, action) => {
       state.jwtToken = action.payload;
     }
   }

@@ -1,14 +1,16 @@
 import React, { createContext, useContext } from "react";
 import { useSelector } from "react-redux";
+
 import { Colors } from "@/contants/Colors";
+import { CustomTheme } from "@/utils/types";
 
 // Define the type for theme object
-export type CustomTheme = {
-  background: string;
-  textField: string;
-  text: string;
-  placeholder: string;
-};
+// export type CustomTheme = {
+//   background: string;
+//   textField: string;
+//   text: string;
+//   placeholder: string;
+// };
 
 const ThemeContext = createContext<CustomTheme | undefined>(undefined);
 

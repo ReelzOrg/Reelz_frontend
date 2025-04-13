@@ -20,6 +20,9 @@ export default function Index() {
         setIsLoggedIn(true);
         dispatch(setJwtToken(token)); //save the token in redux store for faster access
         console.log("we have the token");
+
+        //also check the validty of the token
+        //if the token has been tampered with then redirect the user to the login page
       } else {
         console.log("there is no token, so no user logged in");
       }

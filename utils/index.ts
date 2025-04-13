@@ -1,6 +1,10 @@
 // import { GoogleSignin } from "@react-native-google-signin/google-signin";
 
 import { Float } from "react-native/Libraries/Types/CodegenTypes";
+import { Camera } from 'expo-camera';
+import * as ImagePicker from 'expo-image-picker';
+import { Alert } from "react-native";
+import { AnyListenerPredicate } from "@reduxjs/toolkit";
 
 // const checkIfUserIsValid = async () => {
 //   const isValid = await GoogleSignin;
@@ -45,6 +49,85 @@ export async function getData(url: string, token?: string | null) {
     console.log(err)
   }
 }
+
+// PERMISSIONS
+// Request camera and gallery permissions
+export const requestPermissions = async () => {
+  // Request Camera Permission
+  const cameraStatus = await Camera.requestCameraPermissionsAsync();
+  // setPermissions({...permissions, cameraPermission: cameraStatus.status === 'granted'});
+  // Request Media Library (Gallery) Permission
+  const galleryStatus = await ImagePicker.requestMediaLibraryPermissionsAsync();
+  // setPermissions({ galleryPermission: galleryStatus.status === 'granted', cameraPermission: cameraStatus.status === 'granted' });
+
+  if (cameraStatus.status !== 'granted' || galleryStatus.status !== 'granted') {
+    Alert.alert(
+      'Permissions Required',
+      'Camera and Gallery access is required to use this feature.',
+      [{ text: 'OK' }]
+    );
+  }
+
+  return { cameraPermission: cameraStatus.status === 'granted', galleryPermission: galleryStatus.status === 'granted' };
+};
+
+// HARDWARE
+export const openCamera = async (hasCameraPermission: boolean, setImage: React.Dispatch<React.SetStateAction<{
+  fileSize: number;
+  mimeType: string;
+  uri: string;
+  width: number;
+  height: number;
+}>>) => {
+  if (!hasCameraPermission) {
+    Alert.alert('Permission Denied', 'Camera access is not granted.');
+    return;
+  }
+
+  const result = await ImagePicker.launchCameraAsync({
+    quality: 0.5,
+    allowsEditing: true,
+  });
+
+  if (!result.canceled) {
+    const imgData = result.assets[0];
+    setImage({
+      fileSize: imgData.fileSize || 0,
+      width: imgData.width, height: imgData.height,
+      mimeType: imgData.mimeType || "",
+      uri: imgData.uri
+    })
+  }
+};
+
+export const openGallery = async (hasGalleryPermission: boolean, setImage: React.Dispatch<React.SetStateAction<{
+  fileSize: number;
+  mimeType: string;
+  uri: string;
+  width: number;
+  height: number;
+}>>, mediaTypes: ImagePicker.MediaType[] = ["images", "livePhotos"]) => {
+  if (!hasGalleryPermission) {
+    Alert.alert('Permission Denied', 'Gallery access is not granted.');
+    return;
+  }
+
+  const result = await ImagePicker.launchImageLibraryAsync({
+    mediaTypes: mediaTypes, // Options: 'images', 'videos', 'all'
+    allowsEditing: true,
+    quality: 0.5, //idc about the quality of the profile photo
+  });
+
+  if (!result.canceled) {
+    const imgData = result.assets[0];
+    setImage({
+      fileSize: imgData.fileSize || 0,
+      width: imgData.width, height: imgData.height,
+      mimeType: imgData.mimeType || "",
+      uri: imgData.uri
+    })
+  }
+};
 
 //Basic validity
 export function isPasswordValid(password: string): Boolean {
@@ -104,3 +187,15 @@ export function getMin(x: Float, y: Float): Float {
 export function getMax(x: Float, y: Float): Float {
   return x > y ? x : y;
 }
+
+export const debounce = (func: Function, delay: number) => {
+  let timeoutId: any;
+
+  return (...args: any) => {
+    clearTimeout(timeoutId);
+
+    timeoutId = setTimeout(() => {
+      func.apply(this, args);
+    }, delay);
+  };
+};

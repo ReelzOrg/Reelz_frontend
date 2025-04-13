@@ -1,13 +1,12 @@
 import { Tabs } from "expo-router";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
-import { Platform, View } from "react-native";
 import { RFValue } from "react-native-responsive-fontsize";
 
-import { Colors2 } from "@/contants/Colors";
 import CustomTabBar from "@/components/CustomTabBar";
 import { loadData } from "@/utils/storage";
 import { switchMode } from "@/state/slices/themeSlice";
+import { Colors } from "@/contants/Colors";
 
 export default function TabsLayout() {
   const dispatch = useDispatch();
@@ -39,7 +38,7 @@ export default function TabsLayout() {
         // borderTopWidth: 0,
         // position: "absolute" 
       },
-      tabBarActiveTintColor: Colors2.theme,
+      tabBarActiveTintColor: "white",
       tabBarInactiveTintColor: "#447777",
       headerShadowVisible: false,
       tabBarShowLabel: false,

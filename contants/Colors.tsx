@@ -1,30 +1,20 @@
-export enum Colors2 {
-  theme = '#a9c2eb',
-  background = '#151219',
-  card = '#162640',
-  text = '#fff',
-  border = '#484C56',
-  fbColor = '#1877F2',
-  white = '#FFFFFF',
-  inactive_tint = '#4b535e',
-  disabled = '#D9D9D9',
-  light_gray = '#D3D3D3',
-  like = '#f7404f',
-  lightText = '#888',
-  black = '#000',
-}
+//probably use an enum here for Colors
 
 export const Colors = {
   light: {
-    background: "#ffffff",
-    textField: "#B0B3C6",
-    text: "black",
-    placeholder: "737982"
+    background: "rgb(255, 255, 255)",
+    background_disabled: "rgb(127, 127, 127)",
+    textField: "rgba(176,179,198,1)", //"#B0B3C6",
+    text: "rgb(0, 0, 0)",
+    placeholder: "rgba(115,121,130,1)", //"#737982",
+    btn_primary: "rgba(0,136,255,1)", //"#0088FF"
   },
   dark: {
-    background: "#151219",
+    background: "#151718", //151219
+    background_disabled: "rgb(127, 127, 127)",
     textField: "#4B5265",
     text: "#dedede",
-    placeholder: "#9BA0A7"
+    placeholder: "#9BA0A7",
+    btn_primary: "#0088FF"
   }
 }

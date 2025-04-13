@@ -1,20 +1,19 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { useEffect, useState } from "react";
+// import { useEffect, useState } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { useSelector } from "react-redux";
 
 import { Colors } from "@/contants/Colors";
+import { useTheme } from "@/context/themeContext";
 
 export default function CustomTabBar({ state, descriptors, navigation }: any) {
-  const theme = useSelector((state: any) => state.theme.mode);;
-  const [primaryColor, setPrimaryColor] = useState(theme === "dark" ? Colors.dark.background : Colors.light.background);
+  const themeMode = useSelector((state: any) => state?.theme?.mode) || "dark";
+  const theme = useTheme();
 
-  useEffect(() => {
-    setPrimaryColor(theme == "dark" ? Colors.dark.background : Colors.light.background);
-  }, [theme]);
+  // useEffect(() => {}, []);
 
   return (
-    <View style={{...styles.tabContainer, backgroundColor: primaryColor}}>
+    <View style={{...styles.tabContainer, backgroundColor: theme.background}}>
       {state.routes.map((route: any, index: number) => {
         const { options } = descriptors[route.key];
         const isFocused = state.index === index;
@@ -41,7 +40,7 @@ export default function CustomTabBar({ state, descriptors, navigation }: any) {
               name={options.tabBarLabel}
               size={24}
               color={isFocused
-                ? theme == "dark" ? 'white' : 'black'
+                ? themeMode == "dark" ? 'white' : 'black'
                 : "gray"
               }
             />

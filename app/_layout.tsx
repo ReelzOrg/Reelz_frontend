@@ -8,7 +8,7 @@ import store from '@/state/store';
 
 export default function Layout() {
 
-  useEffect(() => {}, []);
+  // useEffect(() => {}, []);
 
   return (
     <GestureHandlerRootView>
@@ -19,6 +19,7 @@ export default function Layout() {
           }}>
             <Stack.Screen name="/(tabs)/home" options={{ headerShown: false }} />
             <Stack.Screen name="/(auth)/login" options={{ headerShown: false }} />
+            <Stack.Screen name="/user/[username]" options={{ headerShown: false }} />
           </Stack>
         </ThemeProvider>
       </Provider>
