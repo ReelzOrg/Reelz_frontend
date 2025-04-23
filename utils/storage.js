@@ -1,22 +1,13 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as SecureStore from 'expo-secure-store';
 
-export const saveData = async (key, value) => {
-  try {
-    await AsyncStorage.setItem(key, JSON.stringify(value))
-    console.log(key, value, "is saved successfully!")
-  } catch (err) {console.log("error while saving data", err)}
-}
-
-export const loadData = async (key) => {
-  try {
-    const value = await AsyncStorage.getItem(key);
-    if(value != null) {
-      return JSON.parse(value);
-    }
-  } catch(err) {console.log("error while loading data", err)}
-}
-
+// export const loadData = async (key) => {
+//   try {
+//     const value = await AsyncStorage.getItem(key);
+//     if(value != null) {
+//       return JSON.parse(value);
+//     }
+//   } catch(err) {console.log("error while loading data", err)}
+// }
 
 // JWT token / Data
 export async function saveToken(token, tokenName) {
@@ -33,7 +24,7 @@ export async function getToken(tokenName) {
     const jwtToken = await SecureStore.getItemAsync(tokenName);
     return jwtToken;
   } catch (error) {
-    console.error('Failed to retrieve JWT:', error);
+    console.error('Failed to retrieve data:', error);
     return null;
   }
 }

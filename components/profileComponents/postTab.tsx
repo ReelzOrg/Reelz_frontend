@@ -1,6 +1,8 @@
-import { CustomTheme, useTheme } from "@/context/themeContext";
+import { useTheme } from "@/context/themeContext";
+import { CustomTheme } from "@/utils/types";
+import { router } from "expo-router";
 import { useMemo } from "react";
-import { View, Text, FlatList, useWindowDimensions, StyleSheet, StyleProp, ViewStyle } from "react-native";
+import { View, Text, FlatList, useWindowDimensions, StyleSheet, StyleProp, ViewStyle, Image, Pressable, TouchableOpacity } from "react-native";
 
 const createStyles = (theme: CustomTheme) => StyleSheet.create({
   container: {
@@ -8,7 +10,7 @@ const createStyles = (theme: CustomTheme) => StyleSheet.create({
   },
   item: {
     // margin: 1, // Adjust as needed
-    backgroundColor: '#f0f0f0',
+    backgroundColor: '#000000',
     // borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
@@ -65,9 +67,12 @@ export default function ShowPosts({ tab = "posts", data, numColumns, itemStyle }
       ? (<View style={styles.posts}>
         {rows.map((rowItems, rowIndex) => (
           <View key={rowIndex} style={[styles.row, { marginBottom: itemMargin }]}>
-            {rowItems.map((item: React.ReactNode, colIndex: number) => (
+            {rowItems.map((item: any, colIndex: number) => (
+              <TouchableOpacity key={colIndex} onPress={() => {
+                router.push(`/post/${item._id}`);
+              }}>
               <View 
-                key={colIndex}
+                // key={colIndex}
                 style={[
                   styles.item,
                   { 
@@ -77,8 +82,12 @@ export default function ShowPosts({ tab = "posts", data, numColumns, itemStyle }
                   }
                 ]}
               >
-                {item}
+                {/* {item} */}
+                {/* We are taking the first image only because we are not supporting multiple images yet */}
+                {/* You might have to put in the colIndex in place of 0 here */}
+                <Image src={item.media_items[0].media_url} resizeMode="cover" style={{width: "100%", height: "100%"}} />
               </View>
+              </TouchableOpacity>
             ))}
             {/* Add empty views for last row if needed */}
             {rowItems.length < numColumns && Array(numColumns - rowItems.length)

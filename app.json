@@ -8,10 +8,12 @@
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
-    "assetBundlePatterns": ["./assets/*"],
+    "assetBundlePatterns": [
+      "./assets/*"
+    ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.yourdomain.myapp"
+      "bundleIdentifier": "xyz.virajdoshi.reelz"
     },
     "android": {
       "adaptiveIcon": {
@@ -23,7 +25,9 @@
         "android.permission.WRITE_EXTERNAL_STORAGE",
         "android.permission.ACCESS_MEDIA_LOCATION",
         "android.permission.CAMERA",
-        "android.permission.RECORD_AUDIO"
+        "android.permission.RECORD_AUDIO",
+        "android.permission.FOREGROUND_SERVICE",
+        "android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"
       ],
       "package": "xyz.virajdoshi.reelz"
     },
@@ -34,12 +38,6 @@
     },
     "plugins": [
       "expo-router",
-      [
-        "@react-native-google-signin/google-signin",
-        {
-          "iosUrlScheme": "com.googleusercontent.apps.16636073917-8ssm75468fc62h1ipukmjp5mh3pghtoh"
-        }
-      ],
       [
         "expo-splash-screen",
         {
@@ -57,12 +55,12 @@
         "react-native-video",
         {
           "enableNotificationControls": true,
-            "androidExtensions": {
-              "useExoplayerIMA": true,
-              "useExoplayerRtsp": true,
-              "useExoplayerSmoothStreaming": true,
-              "useExoplayerHls": true,
-              "useExoplayerDash": true
+          "androidExtensions": {
+            "useExoplayerIMA": true,
+            "useExoplayerRtsp": true,
+            "useExoplayerSmoothStreaming": true,
+            "useExoplayerHls": true,
+            "useExoplayerDash": true
           }
         }
       ],
@@ -86,6 +84,14 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "5c1557d6-ee32-47c4-8134-2c6c1ce6b16b"
+      }
     }
   }
 }

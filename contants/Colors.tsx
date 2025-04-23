@@ -8,6 +8,7 @@ export const Colors = {
     text: "rgb(0, 0, 0)",
     placeholder: "rgba(115,121,130,1)", //"#737982",
     btn_primary: "rgba(0,136,255,1)", //"#0088FF"
+    mode: "light" as "light"
   },
   dark: {
     background: "#151718", //151219
@@ -15,6 +16,7 @@ export const Colors = {
     textField: "#4B5265",
     text: "#dedede",
     placeholder: "#9BA0A7",
-    btn_primary: "#0088FF"
+    btn_primary: "#0088FF",
+    mode: "dark" as "dark"
   }
 }

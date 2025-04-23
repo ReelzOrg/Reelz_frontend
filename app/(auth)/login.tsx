@@ -1,18 +1,18 @@
 import { StatusBar } from "expo-status-bar";
+import { StyleSheet, View, Text, TouchableOpacity, Image } from "react-native";
 import { useMemo, useState } from "react";
-import { StyleSheet, View, Text, TouchableOpacity, Image, useWindowDimensions } from "react-native";
+import { router } from "expo-router";
 import { ScrollView } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 
 import { useTheme } from "@/context/themeContext";
 import { TextField } from "@/components";
 import { isEmailValid, postData } from "@/utils";
 import { saveToken } from "@/utils/storage";
-import { router } from "expo-router";
 import { logo_t } from "@/contants/assets";
 import { CustomTheme } from "@/utils/types";
-// import { setUser } from "@/state/slices/userSlice";
+import { setJwtToken, setUser } from "@/state/slices";
 
 const createStyles = (theme: CustomTheme) => StyleSheet.create({
   container: {
@@ -30,10 +30,10 @@ export default function LoginScreen() {
   console.log("We ar ein login screen");
   const baseurl = process.env.EXPO_PUBLIC_BASE_URL || "http://192.168.252.240:3000"
   const dispatch = useDispatch();
-  const themeMode = useSelector((state: any) => state.theme.mode);
+  // const themeMode = useSelector((state: any) => state.theme.mode);
   const theme = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
-  const { width, height } = useWindowDimensions();
+  // const { width, height } = useWindowDimensions();
 
   const [loginForm, setLoginForm] = useState({email: '', password: ''})
 
@@ -81,7 +81,9 @@ export default function LoginScreen() {
 
               if (response.success) {
                 saveToken(response.token, "reelzUserToken");
-                // dispatch(setUser(response.user))Ks
+                dispatch(setUser(response.user))
+                dispatch(setJwtToken(response.token))
+
                 router.replace('/(tabs)/home');
               } else {
                 console.log("The login was not sucessfull")
@@ -102,7 +104,7 @@ export default function LoginScreen() {
           </View>
         </View>
       </ScrollView>
-      <StatusBar style={themeMode == "dark" ? "light" : "dark"} />
+      <StatusBar style={theme.mode == "dark" ? "light" : "dark"} />
     </SafeAreaView>
   );
 }

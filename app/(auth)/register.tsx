@@ -1,20 +1,18 @@
 import { useEffect, useMemo, useState } from "react";
-import { Alert, Image, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { router } from "expo-router";
-import { useWindowDimensions } from 'react-native';
 import { useDispatch, useSelector } from "react-redux";
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
-import { RFValue } from "react-native-responsive-fontsize";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 
-import { getMax, isEmailValid, isPasswordValid, openCamera, openGallery, postData, requestPermissions, uploadImagetoS3 } from "@/utils";
+import { isEmailValid, isPasswordValid, postData, uploadImagetoS3 } from "@/utils";
 import { placeholder } from "@/contants/assets";
 import { useTheme } from "@/context/themeContext";
-import { TextField } from "@/components";
+import { TextField, PressableProfilePhoto } from "@/components";
 import { saveToken } from "@/utils/storage";
-import { CustomTheme } from "@/utils/types";
-// import { setUser } from "@/state/slices/userSlice";
+import { CustomTheme, SimpleImage } from "@/utils/types";
+import { setUser, setJwtToken } from "@/state/slices";
 
 const createStyles = (theme: CustomTheme) => StyleSheet.create({
   container: {
@@ -30,7 +28,7 @@ const createStyles = (theme: CustomTheme) => StyleSheet.create({
 
 export default function RegisterScreen() {
   const baseurl = process.env.EXPO_PUBLIC_BASE_URL || "http://192.168.252.240:3000";
-  // const dispatch = useDispatch();
+  const dispatch = useDispatch();
   const themeMode = useSelector((state: any) => state.theme.mode);
   const theme = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
@@ -38,29 +36,13 @@ export default function RegisterScreen() {
   const [userData, setUserData] = useState({
     username: '', email: '', password: '', first_name: '', last_name: '', imgUrl: ''
   });
-  const [userImage, setUserImage] = useState({
+  const [userImage, setUserImage] = useState<SimpleImage>({
     fileSize: 0,
     mimeType: "",
     uri: "",
     width: 0, height: 0,
   })
-  const [permissions, setPermissions] = useState({
-    cameraPermission: false, galleryPermission: false
-  })
   const [confirmPass, setConfirmPass] = useState('');
-  const [loading, setLoading] = useState(false);
-  const { width, height } = useWindowDimensions();
-  const halfWidth = width / 2;
-
-  useEffect(() => {
-    // requestPermissions()
-    async function getPermissions() {
-      const { cameraPermission, galleryPermission } = await requestPermissions();
-      setPermissions({ cameraPermission, galleryPermission });
-    }
-
-    getPermissions();
-  }, []);
 
   function handleFormInput(value: string, changedData: string) {
     setUserData({ ...userData, [changedData]: value })
@@ -131,27 +113,7 @@ export default function RegisterScreen() {
       <ScrollView>
         <View style={styles.container}>
           <View style={{ alignItems: 'center', width: "100%" }}>
-            <TouchableOpacity onPress={() => {
-              Alert.alert(
-                "Select Method",
-                "How do you want to select the image?",
-                [{
-                  text: "Take a photo",
-                  // onPress: () => openCamera(permissions.cameraPermission)
-                  onPress: () => openCamera(permissions.cameraPermission, setUserImage)
-                },
-                {
-                  text: "Choose from gallery",
-                  // onPress: () => openGallery(permissions.galleryPermission)
-                  onPress: () => openGallery(permissions.galleryPermission, setUserImage)
-                }]
-              )
-            }}>
-              {userImage.uri
-                ? <Image src={userImage.uri} resizeMode="contain" borderRadius={getMax((halfWidth - 70) / 2, 50)} style={{ width: getMax(100, halfWidth - 70), height: getMax(halfWidth - 70, 100) }} />
-                : <Image source={placeholder} resizeMode="contain" borderRadius={getMax((halfWidth - 70) / 2, 50)} style={{ width: getMax(100, halfWidth - 70), height: getMax(halfWidth - 70, 100) }} />
-              }
-            </TouchableOpacity>
+            <PressableProfilePhoto userProfilePhoto={userImage}  userProfilePhotoUpdater={setUserImage} />
             <TextField
               value={userData.username}
               onUserInput={(value: string) => handleFormInput(value, "username")}
@@ -186,6 +148,7 @@ export default function RegisterScreen() {
               </View>
             </View>
 
+            {/* email & password */}
             <View style={{ width: "100%", maxWidth: 500 }}>
               <TextField
                 value={userData.email}
@@ -233,19 +196,21 @@ export default function RegisterScreen() {
                 if (!userData.first_name) { console.log("First Name is required"); return; }
                 if (!userData.username) { console.log("Username is required"); return; }
 
-                setLoading(true);
-
-                let userDP = await uploadImagetoS3(userImage.uri == "" ? placeholder : userImage.uri, `${userData.username}_DP`, userImage.mimeType)
+                let userDP = await uploadImagetoS3({
+                  mimeType: userImage.mimeType,
+                  uri: userImage.uri == "" ? placeholder : userImage.uri,
+                  name: `${userData.username}_DP`
+                })
 
                 if (userDP && !userDP.uploaded) { /**user img could not be saved in the s3 bucket */ }
                 // else { setUserData({...userData, imgUrl: userDP?.userImgURL}) }
                 let response = await postData(`${baseurl}/api/auth/register`, { ...userData, imgUrl: userDP?.userImgURL });
                 // console.log(response);
 
-                setLoading(false);
                 if (response.success) {
                   saveToken(response.token, "reelzUserToken");
-                  // dispatch(setUser(response.user))
+                  dispatch(setJwtToken(response.token))
+                  dispatch(setUser(response.user))
                   router.replace('/(tabs)/home');
                 } else {
                   console.log("The user was NOT saved")

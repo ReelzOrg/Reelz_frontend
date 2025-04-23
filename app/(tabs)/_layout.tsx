@@ -4,16 +4,16 @@ import { useEffect } from "react";
 import { RFValue } from "react-native-responsive-fontsize";
 
 import CustomTabBar from "@/components/CustomTabBar";
-import { loadData } from "@/utils/storage";
 import { switchMode } from "@/state/slices/themeSlice";
 import { Colors } from "@/contants/Colors";
+import { getToken } from "@/utils/storage";
 
 export default function TabsLayout() {
   const dispatch = useDispatch();
 
   useEffect(() => {
     async function loadTheme() {
-      const mode = (await loadData("mode"));
+      const mode = (await getToken("mode"));
       if (mode) {
         dispatch(switchMode(mode)); // Set the theme after loading
       }
@@ -46,6 +46,7 @@ export default function TabsLayout() {
       <Tabs.Screen name="home" options={{tabBarLabel: "home"}} />
       <Tabs.Screen name="explore" options={{tabBarLabel: "search"}} />
       <Tabs.Screen name="create" options={{tabBarLabel: "plus-circle"}} />
+      <Tabs.Screen name="reels" options={{tabBarLabel: "video-camera"}} />
       <Tabs.Screen name="profile" options={{tabBarLabel: "user-circle-o"}} />
     </Tabs>
   );

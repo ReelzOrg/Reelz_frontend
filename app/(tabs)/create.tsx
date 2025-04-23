@@ -8,6 +8,9 @@ import { useSelector } from "react-redux";
 
 import { useTheme } from "@/context/themeContext";
 import { CustomTheme } from "@/utils/types";
+import { FontAwesome } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
+import { navigateBack } from "@/utils";
 
 const createStyles = (theme: CustomTheme) => StyleSheet.create({
   container: {
@@ -36,7 +39,7 @@ const createStyles = (theme: CustomTheme) => StyleSheet.create({
   },
   selectedOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0,0,0,0.3)',
+    backgroundColor: 'rgba(0,0,0,0.5)',
   },
   selectionIndicator: {
     position: 'absolute',
@@ -60,28 +63,60 @@ export default function CreateContent() {
   const themeMode = useSelector((state: any) => state.theme.mode);
   const styles = createStyles(theme);
 
-  const { width } = useWindowDimensions();
-  const itemSize = width / 3 - 2;
+  const { width, height } = useWindowDimensions();
+  const numColumns = width < 300 ? 3 : 4 /**i.e  width/4 < 75 */
+  const itemSize = (width-(numColumns+1)) / numColumns;
   const [assets, setAssets] = useState<MediaLibrary.Asset[]>([]);
-
   const [mediaLibPermission, requestMediaLibPermission] = MediaLibrary.usePermissions();
+  const router = useRouter();
 
+  const [selectedImage, setSelectedImage] = useState<{id:string, uri: string, fileType: string}>();
+  const [selectMultiple, setSelectMultiple] = useState<boolean>(false);
+
+  function getLargestAlbum(fetchedAlbums: MediaLibrary.Album[]): number {
+    let maxCount = 0;
+    let albumIndex = 0;
+    
+    for(let i = 0; i < fetchedAlbums.length; i++) {
+      if(fetchedAlbums[i].assetCount > maxCount) {
+        maxCount = fetchedAlbums[i].assetCount;
+        albumIndex = i;
+      }
+    }
+
+    return albumIndex;
+  }
+
+  function getFileType(filename: string) {
+    if(filename.split(".")[1] == "jpg" || filename.split(".")[1] == "jpeg")
+      return "image/jpeg"
+    if(filename.split(".")[1] == "png") return "image/png"
+    
+    //add gifs too
+    
+    return "video/mp4"
+  }
+
+  //select the album with the most assests
   async function getAlbums() {
     const fetchedAlbums = await MediaLibrary.getAlbumsAsync();
+    const largestAlbumIndex = getLargestAlbum(fetchedAlbums);
+
     const albumAssets = await MediaLibrary.getAssetsAsync({
-      album: fetchedAlbums[0],
-      first: 5,
-      mediaType: "photo",
+      album: fetchedAlbums[largestAlbumIndex],
+      first: 40,
+      mediaType: ["photo", "video"],
       sortBy: "creationTime",
     });
-    console.log(fetchedAlbums);
+    // console.log("fetched assets are:", fetchedAlbums);
+    // console.log(albumAssets);
     setAssets(albumAssets.assets);
+    setSelectedImage({id: albumAssets.assets[0].id, uri: albumAssets.assets[0].uri, fileType: getFileType(albumAssets.assets[0].filename)});
   }
 
   useEffect(() => {
     async function askPermissions() {
       const x = await handleContinue();
-      console.log("x:", x);
       if(x) {
         getAlbums();
       }
@@ -92,7 +127,6 @@ export default function CreateContent() {
 
   async function handleContinue() {
     const havePermissions = await requestAllPermissions();
-    console.log(havePermissions)
     if (!havePermissions) {
       Alert.alert('Permissions Required', 'Media Library access is required to use this feature. Please give the permissions in the settings');
       return false;
@@ -121,12 +155,51 @@ export default function CreateContent() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <FlatList
-        data={assets}
-        renderItem={({ item, index }) => (
-          <Image key={item.id} source={{ uri: item.uri }} style={{ width: 50, height: 50, margin: 1 }} />
-        )}
-      />
+      <View style={{flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 14, paddingHorizontal: 8}}>
+        <TouchableOpacity onPress={() => navigateBack({router, pushOrReplace: 'replace'})}>
+          <FontAwesome name="close" size={30} style={{color: theme.text}} />
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => {
+          //go to the next step in posting a image
+          router.push({
+            pathname: '/postContent/newpost',
+            params: {imgUri: selectedImage?.uri, id: selectedImage?.id, fileType: selectedImage?.fileType}
+          })
+        }}>
+          <Text style={{color: theme.text, fontSize: 30}}>Next</Text>
+        </TouchableOpacity>
+      </View>
+      <View style={{margin: 1}}>
+        <Image source={{uri: selectedImage?.uri}} style={{height: height/2.5}} resizeMode="cover" />
+        <View style={{flexDirection: 'row'}}>
+          <TouchableOpacity onPress={() => {
+            setSelectMultiple(!selectMultiple);
+          }}>
+            <View style={{flexDirection: 'row', paddingHorizontal: 8, paddingVertical: 5, borderRadius: 10, backgroundColor: selectMultiple ? 'white' : 'black', borderWidth: 1, borderColor: 'white'}}>
+              <FontAwesome name="copy" size={20} style={{marginRight: 5, color: selectMultiple ? 'black' : 'white'}} />
+              <Text style={{color: selectMultiple ? 'black' : 'white', fontWeight: '600' }}>
+                Select Multiple
+              </Text>
+            </View>
+          </TouchableOpacity>
+        </View>
+        <FlatList
+          data={assets}
+          // horizontal={true}
+          numColumns={numColumns}
+          renderItem={({ item, index }) => (
+            <TouchableOpacity onPress={() => setSelectedImage({id: item.id, uri: item.uri, fileType: getFileType(item.filename)})}>
+              <View style={{position: 'relative'}}>
+                <Image key={item.id} source={{ uri: item.uri }} style={{ width: itemSize, height: itemSize, margin: 1 }} />
+                {selectedImage?.id === item.id && (
+              <View style={styles.selectedOverlay} />
+            )}
+              </View>
+            </TouchableOpacity>
+          )}
+        />
+      </View>
       <StatusBar style={themeMode === 'dark' ? 'light' : 'dark'} />
     </SafeAreaView>
   );

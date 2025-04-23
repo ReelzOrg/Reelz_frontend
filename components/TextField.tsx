@@ -1,6 +1,6 @@
-import { CustomTheme } from "@/context/themeContext";
 import { KeyboardTypeOptions, StyleProp, Text, TextInput, useWindowDimensions, View, ViewStyle } from "react-native";
 import { RFValue } from "react-native-responsive-fontsize";
+import { CustomTheme } from "@/utils/types";
 
 export default function TextField(
   {value, onUserInput, theme, placeholder, label, isUsername = false, isPassword = false, keyboard = "default", onPress=()=>{}, reference=null, styles=null }:

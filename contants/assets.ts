@@ -6,6 +6,7 @@ import Add from "../assets/icons/add.png";
 
 import placeholder from  "../assets/images/placeholder.png";
 import logo_t from "../assets/images/logo_t.png";
+// import * as logo_t from "@/assets/images";
 
 export { Home, HomeFocused, Profile, ProfileFocused, Add };
 export { placeholder, logo_t };

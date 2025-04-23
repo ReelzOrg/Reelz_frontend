@@ -4,19 +4,11 @@ import { useSelector } from "react-redux";
 import { Colors } from "@/contants/Colors";
 import { CustomTheme } from "@/utils/types";
 
-// Define the type for theme object
-// export type CustomTheme = {
-//   background: string;
-//   textField: string;
-//   text: string;
-//   placeholder: string;
-// };
-
 const ThemeContext = createContext<CustomTheme | undefined>(undefined);
 
 export function ThemeProvider({children}: {children: React.ReactNode}) {
   const themeMode = useSelector((state: any) => state.theme.mode);
-  const theme = React.useMemo(() => (themeMode == "dark" ? Colors.dark : Colors.light), [themeMode]);
+  const theme = React.useMemo<CustomTheme>(() => (themeMode === "dark" ? Colors.dark : Colors.light), [themeMode]);
 
   return (
     <ThemeContext.Provider value={theme}>

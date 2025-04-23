@@ -1,11 +1,10 @@
-import { useMemo, useState } from "react";
-import { useSelector } from "react-redux";
-import { StyleSheet, Text, View } from "react-native";
+import React, { useMemo, useState } from "react";
+import { StyleSheet, View } from "react-native";
 
-import { CustomTheme, useTheme } from "@/context/themeContext";
+import { useTheme } from "@/context/themeContext";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { FontAwesome } from "@expo/vector-icons";
-import ShowPosts from "./postTab";
+import { CustomTheme } from "@/utils/types";
 
 const createStyles = (theme: CustomTheme) => StyleSheet.create({
   container: {
@@ -25,23 +24,11 @@ const createStyles = (theme: CustomTheme) => StyleSheet.create({
   },
 });
 
-export default function TabSwitch() {
+export default function TabSwitch({ children }: { children: React.ReactNode }) {
   const theme = useTheme();
-  const themeMode = useSelector((state: any) => state.theme.mode);
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   const [activeTab, setActiveTab] = useState<"posts" | "reels">("posts");
-
-  // function renderContent() {
-  //   switch (activeTab) {
-  //     case "posts":
-  //       return <ShowPosts tab="posts" />;
-  //     case "reels":
-  //       return <Text style={styles.textStyle}>Reels</Text>;
-  //     default:
-  //       return null;
-  //   }
-  // }
 
   return (
     <View style={styles.container}>
@@ -59,11 +46,12 @@ export default function TabSwitch() {
         </View>
       </View>
 
-      <ShowPosts tab={activeTab} data={[
+      {/* <ShowPosts tab={activeTab} data={[
         <View style={{backgroundColor: 'yellow', width: "100%", height: "100%"}}></View>,
         <View style={{backgroundColor: 'blue'}}></View>,
         <View style={{backgroundColor: 'green'}}></View>
-      ]} numColumns={3} />
+      ]} numColumns={3} /> */}
+      {children}
     </View>
   );
 }

@@ -1,7 +1,7 @@
 import { Redirect } from 'expo-router';
 import { useEffect, useState } from 'react';
 
-import { getToken } from '@/utils/storage';
+import { getToken, saveToken } from '@/utils/storage';
 import { useDispatch, useSelector } from 'react-redux';
 import { setJwtToken } from '@/state/slices/userTokenSlice';
 
@@ -15,13 +15,14 @@ export default function Index() {
     const config = async () => {
       const token = await getToken('reelzUserToken')
       console.log("token is:", !!token);
+      // await saveToken("", 'reelzUserToken');
 
       if (!!token) {
         setIsLoggedIn(true);
         dispatch(setJwtToken(token)); //save the token in redux store for faster access
         console.log("we have the token");
 
-        //also check the validty of the token
+        //also check the validty of the token by sending the token to the server
         //if the token has been tampered with then redirect the user to the login page
       } else {
         console.log("there is no token, so no user logged in");

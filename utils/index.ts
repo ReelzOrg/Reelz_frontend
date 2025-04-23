@@ -5,6 +5,8 @@ import { Camera } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
 import { Alert } from "react-native";
 import { AnyListenerPredicate } from "@reduxjs/toolkit";
+import { Href, Router } from "expo-router";
+import { MediaData } from "./types";
 
 // const checkIfUserIsValid = async () => {
 //   const isValid = await GoogleSignin;
@@ -22,7 +24,7 @@ export async function postData(url: string, data: {}, token?: string | null, con
   const result = await fetch(url, {
     method: 'POST',
     headers: {
-      'Authorrization': token != null || token != undefined ? `Bearer ${token}` : "",
+      'Authorization': token != null || token != undefined ? `Bearer ${token}` : "",
       'Content-Type': contentType
     },
     body: JSON.stringify(data)
@@ -141,28 +143,36 @@ export function isEmailValid(email: string): Boolean {
 }
 
 // S3 functions
-export async function uploadImagetoS3(imgUrl: string, imgName: string, fileType: string) {
+export async function uploadImagetoS3(mediaData: MediaData, url?: string, token?: string) {
+  let uploadUrl: string = url || "http://10.0.0.246:3000/api/auth/register/upload-profile-photo";
+  console.log(uploadUrl)
+  console.log(token != null || token != undefined ? `Bearer ${token}` : "")
   try {
-    const res = await fetch("http://10.0.0.246:3000/api/upload", {
+    const res = await fetch(uploadUrl, {
       method: 'POST',
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        'Authorization': token != null || token != undefined ? `Bearer ${token}` : "",
+        "Content-Type": "application/json"
+      },
       body: JSON.stringify({
-        fileName: imgName,
-        fileType: fileType
+        fileName: mediaData.name,
+        fileType: mediaData.mimeType
       })
     });
 
     const uploadUrls = await res.json();
     console.log("upload url is:", uploadUrls);
 
-    const image = await fetch(imgUrl);
+    if(uploadUrls.success == false) return {uploaded: false, userImgURL: null};
+
+    const image = await fetch(mediaData.uri);
     // const image = await fetch(uploadUrls["fileURL"])
     const blob = await image.blob();
 
     const uploadResponse = await fetch(uploadUrls["uploadURL"], {
       method: 'PUT',
       body: blob,
-      headers: {'Content-Type': fileType},
+      headers: {'Content-Type': mediaData.mimeType},
     });
 
     if (uploadResponse.ok) {
@@ -172,12 +182,23 @@ export async function uploadImagetoS3(imgUrl: string, imgName: string, fileType:
       console.error('Upload failed');
       const result = await uploadResponse.text();
       console.log(result);
+
     }
   } catch(err) {
     console.log(`Error while uploading the file:`, err);
     return {uploaded: false, userImgURL: null};
   }
 }
+
+//ROUTE HANDLING
+export function navigateBack({router, fallbackRoute = "/(tabs)/home", pushOrReplace = "push"}: {router: Router, fallbackRoute?: Href, pushOrReplace?: "push" | "replace"}) {
+  if(router.canGoBack()) {
+    router.back()
+  } else {
+    if(pushOrReplace == "push") router.push(fallbackRoute)
+    else router.replace(fallbackRoute)
+  }
+} 
 
 //Math
 export function getMin(x: Float, y: Float): Float {

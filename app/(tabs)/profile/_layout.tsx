@@ -1,0 +1,13 @@
+import { Stack } from "expo-router";
+
+export default function ProfileStack() {
+  return (
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="index" />
+      <Stack.Screen name="edit" />
+      <Stack.Screen name="settings" />
+      <Stack.Screen name="followers" /> {/*maybee here is a good idea?*/}
+      <Stack.Screen name="following" /> {/*maybee here is a good idea?*/}
+    </Stack>
+  );
+}

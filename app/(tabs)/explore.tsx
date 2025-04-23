@@ -6,7 +6,7 @@ import { ScrollView } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useSelector } from "react-redux";
 
-import { SearchedAccTile, TextField } from "@/components";
+import { SearchBar, SearchedAccTile, TextField } from "@/components";
 import { useTheme } from "@/context/themeContext";
 
 export default function Explore() {
@@ -14,41 +14,13 @@ export default function Explore() {
   const theme = useTheme();
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [isSearching, setIsSearching] = useState<boolean>(false);
-  const searchRef = useRef<TextInput>(null);
 
   return (
     <SafeAreaView style={{backgroundColor: theme.background, flex: 1}}>
       <View style={{backgroundColor: theme.background}}>
       {/* Search bar */}
-      <View style={{flexDirection: 'row', alignItems: 'center', margin: 14}}>
-        {isSearching
-          ? (
-          <TouchableOpacity onPress={() => {
-            setIsSearching(false);
-            Keyboard.dismiss();
-            searchRef.current?.blur();
-          }}>
-            <FontAwesome name="arrow-left" color={theme.text} size={20} />
-          </TouchableOpacity>
-          )
-          : (null)
-        }
-        <View style={{flex: 1, marginLeft: isSearching ? 10 : 0}}>
-          <TextField
-            reference={searchRef}
-            value={searchTerm}
-            onPress={() => {
-              setIsSearching(true)
-            }}
-            placeholder="Search"
-            onUserInput={(value: string) => {
-              console.log("Search pressed")
-              setSearchTerm(value)
-            }}
-            theme={theme}
-          />
-        </View>
-      </View>
+      <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm}
+      isSearching={isSearching} setIsSearching={setIsSearching} />
 
       <ScrollView>
         {/* Explore content */}
