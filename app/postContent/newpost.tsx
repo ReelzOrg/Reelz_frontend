@@ -1,15 +1,15 @@
 import { FontAwesome } from "@expo/vector-icons";
+import { useMemo, useState } from "react";
+import { ScrollView } from "react-native-gesture-handler";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Image, Text, TextInput, TouchableOpacity, useWindowDimensions, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useSelector } from "react-redux";
+import { StatusBar } from "expo-status-bar";
 
 import { useTheme } from "@/context/themeContext";
 import { navigateBack, postData, uploadImagetoS3 } from "@/utils";
-import { useMemo, useState } from "react";
-import { ScrollView } from "react-native-gesture-handler";
 import { MediaData } from "@/utils/types";
-import { StatusBar } from "expo-status-bar";
 
 export default function NewPost() {
   const router = useRouter();
@@ -57,7 +57,10 @@ export default function NewPost() {
       </ScrollView>
 
       <TouchableOpacity onPress={async () => {
-          //make a request to server to post the image data
+          //update this to handle multiple images
+          const mediaType = typeof fileType == "string"
+          ? fileType.split("/")[0]
+          : fileType[0];
           
           //please improve this logic
           //get a presigned aws s3 url
@@ -66,7 +69,7 @@ export default function NewPost() {
             const userPost = await uploadImagetoS3({
               uri: imgUri,
               name: `post_${id}`,
-              mimeType: typeof fileType == "string" ? fileType : fileType[0]
+              mimeType: typeof mediaType == "string" ? mediaType : mediaType[0]
             }, `http://10.0.0.246:3000/api/user/${_id}/save-post-media`, token);
 
             if(userPost?.uploaded) {
@@ -76,12 +79,12 @@ export default function NewPost() {
               let savePost = await postData(`http://10.0.0.246:3000/api/user/${_id}/post/create`, {
                 caption: caption,
                 mediaUrl: userPost.userImgURL,
-                mediaType: fileType
+                mediaType: mediaType
               }, token);
 
               console.log("the saved post is:", savePost);
               if(savePost.success) {
-                router.replace('/(tabs)/home');
+                router.replace('/(tabs)/profile');
               }
             }
           } else if(typeof imgUri == "object") {
