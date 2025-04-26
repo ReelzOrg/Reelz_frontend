@@ -32,7 +32,7 @@ export default function AllUserProfilePage() {
 
   useEffect(() => {
     async function getUserData() {
-      const user = await getData(`${baseurl}/api/user/${loggedInUserId}`, token);
+      const user = await getData(`${baseurl}/api/user/${username}`, token);
       const userData = await user?.json();
       console.log("user data is: ", userData);
       if(userData.success) {
@@ -50,7 +50,7 @@ export default function AllUserProfilePage() {
       <ScrollView>
         <UserBasicInfo user={user} addFollowBtn={!user.isUserAcc} />
 
-        {user.is_private && !user.isFollowing
+        {user.is_private && (user.followStatus == "none" || user.followStatus == "requested" || user.followStatus == "blocked")
           ? <Text>You can not see the posts of this user</Text>
           : <Text>You can see the posts of this user</Text>
         }

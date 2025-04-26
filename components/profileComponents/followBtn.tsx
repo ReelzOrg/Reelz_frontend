@@ -3,7 +3,7 @@ import { Text, StyleSheet, TouchableOpacity, View } from "react-native";
 
 import { useTheme } from "@/context/themeContext";
 import { getData, postData } from "@/utils";
-import { CustomTheme, UserProfileResponse } from "@/utils/types";
+import { CustomTheme, FollowStatus } from "@/utils/types";
 import { useSelector } from "react-redux";
 
 const createStyles = (theme: CustomTheme) => StyleSheet.create({
@@ -26,54 +26,67 @@ const createStyles = (theme: CustomTheme) => StyleSheet.create({
   }
 })
 
-export default function FollowBtn({ user }: { user: UserProfileResponse | null }) {
+export default function FollowBtn({ userPrivacyData }: { userPrivacyData: { isUserAcc: boolean, followStatus: "follows" | "none" | "requested" | "blocked", _id: string, is_private: boolean } | null }) {
   const theme = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
   const baseurl = process.env.EXPO_PUBLIC_BASE_URL || "http://192.168.252.240:3000";
   const token = useSelector((state: any) => state.reelzUserToken.jwtToken);
+  const userId = useSelector((state: any) => state.user._id);
 
-  const [followed, setFollowed] = useState((user && user.isFollowing) || false);
-  
+  const [followStatus, setFollowStatus] = useState<"follows" | "requested" | "none" | "blocked">(userPrivacyData?.followStatus == undefined ? "none" : userPrivacyData?.followStatus);
+
+  // userPrivacyData?._id is the ID of the requested user whereas userId is the ID of the logged in user
+  // we want to make a request with the id of the requested user
+  async function handleFollow(status: FollowStatus) {
+    let url: string = `${baseurl}/api/user/${userPrivacyData?._id}/`;
+    if(status == FollowStatus.NONE) url += "unfollow";
+    else url += "follow";
+    const followReq = await getData(url, token);
+    return await followReq?.json();
+  }
+
+  // handle the block status from backend & not show the requested user during
+  // the search itself
   return (
     <View style={{width: "100%"}}>
-      {user && user.isUserAcc
-          ? null
-          : !followed
-            ? <TouchableOpacity style={{...styles.followBtnDefault, ...styles.followBtn}} onPress={async () => {
-              console.log("follow button is pressed")
-              // query the backend to follow the user
-              const followReq = await getData(`${baseurl}/api/user/${user?.username}/follow`, token);
-              const followRes = await followReq?.json();
-              console.log(followRes);
+      {userPrivacyData && userPrivacyData?.isUserAcc
+        ? null //or show the edit profile button
+        : followStatus == "none"
+          ? <TouchableOpacity style={{...styles.followBtnDefault, ...styles.followBtn}}
+              onPress={async () => {
+                const status: FollowStatus = userPrivacyData?.is_private ? FollowStatus.REQUESTED : FollowStatus.FOLLOWS;
+                const followRes = await handleFollow(status);
 
-              //change the state of the follow button
-              if(followRes.success) {
-                setFollowed(true);
-              }
-            }}
-            >
-              <Text style={{ color: "white", fontSize: 16 }}>Follow</Text>
+                //set the follow status before making the actual request to the server, make the UI fast
+                if(followRes.success) {
+                  setFollowStatus(status);
+                }
+              }}
+          >
+            <Text style={{ color: "white", fontSize: 16 }}>Follow</Text>
+          </TouchableOpacity>
+          : followStatus == "requested"
+            ? <TouchableOpacity style={{...styles.followBtnDefault, ...styles.reqBtn}} onPress={async () => {
+                //remove the REQUESTED relationship
+                const status: FollowStatus = FollowStatus.NONE;
+                const followRes = await handleFollow(status);
+                if(followRes.success) {
+                  setFollowStatus(status);
+                }
+              }}>
+              <Text style={{ color: theme.text, fontSize: 16 }}>Requested</Text>
             </TouchableOpacity>
-            : user?.is_private
-              ? <TouchableOpacity style={{...styles.followBtnDefault, ...styles.reqBtn}} onPress={() => {
-                // query the backend to request to follow the user
 
-                //change the state of the follow button to requested
-                setFollowed(false);
-              }}
-              >
-                <Text style={{ color: theme.text, fontSize: 16 }}>Requested</Text>
-              </TouchableOpacity>
-              : <TouchableOpacity style={{...styles.followBtnDefault, ...styles.unfollowBtn}} onPress={() => {
-                // query the backend to unfollow the user
-
-                //change the state of the follow button
-                setFollowed(false);
-              }}
-              >
+            // the logged in user already follows the requested user
+            : <TouchableOpacity style={{...styles.followBtnDefault, ...styles.unfollowBtn}} onPress={async () => {
+                //remove the FOLLOWS relationship
+                const status: FollowStatus = FollowStatus.NONE;
+                const followRes = await handleFollow(status);
+                setFollowStatus(status);
+              }}>
                 <Text style={{ color: theme.text, fontSize: 16 }}>Unfollow</Text>
               </TouchableOpacity>
-        }
+      }
     </View>
   );
 }

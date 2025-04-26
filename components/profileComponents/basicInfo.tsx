@@ -5,7 +5,7 @@ import { FontAwesome } from "@expo/vector-icons";
 
 import { placeholder } from "@/contants/assets";
 import { useTheme } from "@/context/themeContext";
-import { CustomTheme, UserProfileResponse } from "@/utils/types";
+import { CustomTheme, UserProfileResponse, FollowStatus } from "@/utils/types";
 import FollowBtn from "./followBtn";
 import EditProfileBtn from "./EditProfileBtn";
 import DiscoverPeopleBtn from "./DiscoverPeopleBtn";
@@ -23,6 +23,8 @@ const createStyles = (theme: CustomTheme) => StyleSheet.create({
   }
 })
 
+//From profile/index.tsx I pass in the UserObject Type but I have made all the
+//properties in UserProfileResponse Object optional so it still works here
 export default function UserBasicInfo({ user, addFollowBtn = false }: { user: UserProfileResponse | null, addFollowBtn?: boolean }) {
   const theme = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
@@ -33,17 +35,19 @@ export default function UserBasicInfo({ user, addFollowBtn = false }: { user: Us
     <View style={styles.userInfo}>
       <View style={{ flexDirection: 'row', justifyContent: "space-between", alignItems: 'center' }}>
         <Text style={{ color: theme.text, fontSize: 20 }}>{user?.username}</Text>
-        <TouchableOpacity onPress={() => { }}>
+        <TouchableOpacity onPress={() => {
+          //go to the settings page
+        }}>
           <FontAwesome name="bars" color={theme.text} size={20} />
         </TouchableOpacity>
       </View>
 
       <View style={{ marginTop: 20, flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between' }}>
         <View style={{flexDirection: 'column', alignItems: 'center'}}>
-        {user && user.profile_picture
-          ? (<Image src={user.profile_picture} style={styles.dpStyle} />)
-          : (<Image source={placeholder} style={styles.dpStyle} />)}
-        <Text style={{ color: theme.text, fontSize: 16, marginTop: 10, fontWeight: "600" }}>{user?.first_name} {user?.last_name}</Text>
+          {user && user.profile_picture
+            ? (<Image src={user.profile_picture} style={styles.dpStyle} />)
+            : (<Image source={placeholder} style={styles.dpStyle} />)}
+          <Text style={{ color: theme.text, fontSize: 16, marginTop: 10, fontWeight: "600" }}>{user?.first_name} {user?.last_name}</Text>
         </View>
         <View style={{flexDirection: 'column', alignItems: 'center', flex: 1, marginLeft: 20, gap: 0}}>
           <View style={{ flexDirection: 'row', width: "100%", justifyContent: 'space-between', flex: 1 }}>
@@ -70,7 +74,7 @@ export default function UserBasicInfo({ user, addFollowBtn = false }: { user: Us
           </View>
           
           {/* follow button */}
-          {addFollowBtn && <FollowBtn user={user} />}
+          {addFollowBtn && <FollowBtn userPrivacyData={{isUserAcc: user?.isUserAcc || false, followStatus: user?.followStatus || FollowStatus.NONE, _id: user?._id || '', is_private: user?.is_private || false}} />}
           {!addFollowBtn && <View style={{flexDirection: "row", gap: 8}}>
             <EditProfileBtn />
             <DiscoverPeopleBtn />

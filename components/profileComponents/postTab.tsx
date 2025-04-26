@@ -2,7 +2,7 @@ import { useTheme } from "@/context/themeContext";
 import { CustomTheme } from "@/utils/types";
 import { router } from "expo-router";
 import { useMemo } from "react";
-import { View, Text, FlatList, useWindowDimensions, StyleSheet, StyleProp, ViewStyle, Image, Pressable, TouchableOpacity } from "react-native";
+import { View, Text, useWindowDimensions, StyleSheet, StyleProp, ViewStyle, Image, Pressable, TouchableOpacity } from "react-native";
 
 const createStyles = (theme: CustomTheme) => StyleSheet.create({
   container: {

@@ -1,10 +1,11 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { FlatList, Image, StyleSheet, TouchableOpacity, View, useWindowDimensions, Text, Alert } from "react-native";
+import { Image, StyleSheet, TouchableOpacity, View, useWindowDimensions, Text, Alert } from "react-native";
 import * as MediaLibrary from "expo-media-library";
 import { Video } from "expo-av";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { useSelector } from "react-redux";
+import { LegendList, LegendListRef, LegendListRenderItemProps } from "@legendapp/list"
 
 import { useTheme } from "@/context/themeContext";
 import { CustomTheme } from "@/utils/types";
@@ -184,11 +185,13 @@ export default function CreateContent() {
             </View>
           </TouchableOpacity>
         </View>
-        <FlatList
+        <LegendList
           data={assets}
           // horizontal={true}
+          keyExtractor={(item) => item.id}
+          recycleItems={true}
           numColumns={numColumns}
-          renderItem={({ item, index }) => (
+          renderItem={({ item, index }: LegendListRenderItemProps<MediaLibrary.Asset>) => (
             <TouchableOpacity onPress={() => setSelectedImage({id: item.id, uri: item.uri, fileType: getFileType(item.filename)})}>
               <View style={{position: 'relative'}}>
                 <Image key={item.id} source={{ uri: item.uri }} style={{ width: itemSize, height: itemSize, margin: 1 }} />

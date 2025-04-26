@@ -7,21 +7,20 @@ import { ThemeProvider } from '@/context/themeContext';
 import store from '@/state/store';
 
 export default function Layout() {
-
   // useEffect(() => {}, []);
 
   return (
     <GestureHandlerRootView>
       <Provider store={store}>
         <ThemeProvider>
-          <Stack screenOptions={{
-            headerShown: false
-          }}>
-            <Stack.Screen name="(tabs)/home" options={{ headerShown: false }} />
-            <Stack.Screen name="(auth)/login" options={{ headerShown: false }} />
-            <Stack.Screen name="user/[username]" options={{ headerShown: false }} />
-            <Stack.Screen name='user/(network)' options={{ headerShown: false }} />
-          </Stack>
+            <Stack screenOptions={{
+              headerShown: false
+            }}>
+              <Stack.Screen name="(tabs)/home" options={{ headerShown: false }} />
+              <Stack.Screen name="(auth)/login" options={{ headerShown: false }} />
+              <Stack.Screen name="user/[username]" options={{ headerShown: false }} />
+              <Stack.Screen name='user/(network)' options={{ headerShown: false }} />
+            </Stack>
         </ThemeProvider>
       </Provider>
     </GestureHandlerRootView>

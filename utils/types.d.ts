@@ -45,10 +45,21 @@ export interface UserObject {
   is_private: boolean;
 }
 
+export enum FollowStatus {
+  FOLLOWS = "follows",
+  NONE = "none",
+  REQUESTED = "requested",
+  BLOCKED = "blocked"
+};
+
+// export interface FollowTypes {
+//   followStatus: FollowStatus.FOLLOWS | FollowStatus.NONE | FollowStatus.REQUESTED | FollowStatus.BLOCKED;
+// }
+
 //remove the isFollowing property
 export interface UserProfileResponse extends UserObject {
-  isUserAcc: boolean;
-  isFollowing: boolean;
+  isUserAcc?: boolean;
+  followStatus?: FollowStatus.FOLLOWS | FollowStatus.NONE | FollowStatus.REQUESTED | FollowStatus.BLOCKED;
 }
 
 export interface PostWithMediaObject {

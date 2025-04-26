@@ -1,7 +1,9 @@
+import { SearchBar } from "@/components";
 import { getData } from "@/utils";
+import { LegendList } from "@legendapp/list";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
-import { FlatList, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import { useSelector } from "react-redux";
 
 export default function UserNetworkList() {
@@ -10,6 +12,8 @@ export default function UserNetworkList() {
   const { id, network } = useLocalSearchParams();
 
   const [followers, setFollowers] = useState([]);
+  const [searchFollowers, setSearchFollowers] = useState('');
+  const [isSearching, setIsSearching] = useState(false);
 
   useEffect(() => {
     async function getList() {
@@ -29,8 +33,13 @@ export default function UserNetworkList() {
 
   return (
     <View>
-      <FlatList
+      <SearchBar searchTerm={searchFollowers} setSearchTerm={setSearchFollowers}
+        isSearching={isSearching} setIsSearching={setIsSearching}
+      />
+      <LegendList
         data={followers}
+        recycleItems={true}
+        keyExtractor={(item) => item.id}
         renderItem={({ item, index }) => {
           return (
             <></>

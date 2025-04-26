@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useTheme } from "@/context/themeContext";
 import { getData } from "@/utils";
 import { setUser } from "@/state/slices";
-import { CustomTheme, UserProfileResponse } from "@/utils/types";
+import { CustomTheme, UserObject, UserProfileResponse } from "@/utils/types";
 import TabSwitch from "@/components/profileComponents/TabSwitch";
 import UserBasicInfo from "@/components/profileComponents/basicInfo";
 import { ShowPosts } from "@/components";
@@ -28,7 +28,7 @@ export default function Profile() {
   const dispatch = useDispatch();
   const token = useSelector((state: any) => state.reelzUserToken.jwtToken);
   // const user = useSelector((state: any) => state.user);
-  const [user, setUserState] = useState<UserProfileResponse | null>(null);
+  const [user, setUserState] = useState<UserObject | null>(null);
   const [posts, setPosts] = useState([]);
 
   const theme = useTheme();

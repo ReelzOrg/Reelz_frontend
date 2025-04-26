@@ -17,7 +17,6 @@ export default function SearchedAccTile({username, first_name, last_name, profil
       pathname: "/user/[username]",
       params: { username: username }
     }} asChild>
-      <Pressable>
       <View style={{flexDirection: "row", alignItems: "center", padding: 8}}>
         {profile_picture
           ? (<Image src={profile_picture} style={{width: 50, height: 50, borderRadius: 25}} />)
@@ -28,7 +27,6 @@ export default function SearchedAccTile({username, first_name, last_name, profil
           <Text style={{fontSize: 14, color: "#888"}}>{first_name} {last_name}</Text>
         </View>
       </View>
-      </Pressable>
     </Link>
   );
 }
