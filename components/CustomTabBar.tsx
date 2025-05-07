@@ -4,7 +4,8 @@ import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { useSelector } from "react-redux";
 
 import { Colors } from "@/contants/Colors";
-import { useTheme } from "@/context/themeContext";
+import { TABBAR_HEIGHT } from "@/contants/values";
+import { useTheme } from "@/hooks/useTheme";
 
 export default function CustomTabBar({ state, descriptors, navigation }: any) {
   const themeMode = useSelector((state: any) => state?.theme?.mode) || "dark";
@@ -56,7 +57,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
-    height: 60,
+    height: TABBAR_HEIGHT,
     borderTopWidth: 0,
     borderTopColor: '#ccc',
   },

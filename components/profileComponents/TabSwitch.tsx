@@ -1,10 +1,10 @@
 import React, { useMemo, useState } from "react";
 import { StyleSheet, View } from "react-native";
 
-import { useTheme } from "@/context/themeContext";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { FontAwesome } from "@expo/vector-icons";
 import { CustomTheme } from "@/utils/types";
+import { useTheme } from "@/hooks/useTheme";
 
 const createStyles = (theme: CustomTheme) => StyleSheet.create({
   container: {
@@ -32,7 +32,6 @@ export default function TabSwitch({ children }: { children: React.ReactNode }) {
 
   return (
     <View style={styles.container}>
-      
       <View style={styles.tabHeader}>
         <View style={{flex: 1, alignItems: 'center'}}>
           <TouchableOpacity onPress={() => setActiveTab("posts")}>
@@ -45,12 +44,6 @@ export default function TabSwitch({ children }: { children: React.ReactNode }) {
           </TouchableOpacity>
         </View>
       </View>
-
-      {/* <ShowPosts tab={activeTab} data={[
-        <View style={{backgroundColor: 'yellow', width: "100%", height: "100%"}}></View>,
-        <View style={{backgroundColor: 'blue'}}></View>,
-        <View style={{backgroundColor: 'green'}}></View>
-      ]} numColumns={3} /> */}
       {children}
     </View>
   );

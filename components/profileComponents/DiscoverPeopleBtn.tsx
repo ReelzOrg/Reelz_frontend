@@ -1,4 +1,4 @@
-import { useTheme } from "@/context/themeContext";
+import { useTheme } from "@/hooks/useTheme";
 import { CustomTheme } from "@/utils/types";
 import { FontAwesome } from "@expo/vector-icons";
 import { Link } from "expo-router";

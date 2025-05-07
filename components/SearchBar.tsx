@@ -1,8 +1,8 @@
 import { FontAwesome } from "@expo/vector-icons";
 import { Keyboard, TextInput, TouchableOpacity, View } from "react-native";
 import TextField from "./TextField";
-import { useTheme } from "@/context/themeContext";
 import { useRef, useState } from "react";
+import { useTheme } from "@/hooks/useTheme";
 
 export default function SearchBar({ searchTerm, setSearchTerm, isSearching, setIsSearching }:
   { searchTerm: string, setSearchTerm: React.Dispatch<React.SetStateAction<string>>,

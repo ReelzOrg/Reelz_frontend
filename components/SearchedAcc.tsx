@@ -3,8 +3,8 @@ import { View, Text, Image, Pressable } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { useSelector } from "react-redux";
 
-import { useTheme } from "@/context/themeContext";
 import { getData } from "@/utils";
+import { useTheme } from "@/hooks/useTheme";
 
 export default function SearchedAccTile({username, first_name, last_name, profile_picture} : {username: string, first_name: string, last_name: string, profile_picture?: string}) {
   const baseurl = process.env.EXPO_PUBLIC_BASE_URL || "http://10.0.0.246:3000";

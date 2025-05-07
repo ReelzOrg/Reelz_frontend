@@ -6,7 +6,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { Alert } from "react-native";
 import { AnyListenerPredicate } from "@reduxjs/toolkit";
 import { Href, Router } from "expo-router";
-import { MediaData } from "./types";
+import { MediaData, MultiMediaData } from "./types";
 
 // const checkIfUserIsValid = async () => {
 //   const isValid = await GoogleSignin;
@@ -143,10 +143,9 @@ export function isEmailValid(email: string): Boolean {
 }
 
 // S3 functions
-export async function uploadImagetoS3(mediaData: MediaData, url?: string, token?: string) {
+//TODO: change this function to handle video files as well
+export async function uploadImagetoS3(mediaData: MediaData, otherData?: any, url?: string, token?: string) {
   let uploadUrl: string = url || "http://10.0.0.246:3000/api/auth/register/upload-profile-photo";
-  console.log(uploadUrl)
-  console.log(token != null || token != undefined ? `Bearer ${token}` : "")
   try {
     const res = await fetch(uploadUrl, {
       method: 'POST',
@@ -156,7 +155,8 @@ export async function uploadImagetoS3(mediaData: MediaData, url?: string, token?
       },
       body: JSON.stringify({
         fileName: mediaData.name,
-        fileType: mediaData.mimeType
+        fileType: mediaData.mimeType,
+        ...otherData
       })
     });
 
@@ -187,6 +187,85 @@ export async function uploadImagetoS3(mediaData: MediaData, url?: string, token?
   } catch(err) {
     console.log(`Error while uploading the file:`, err);
     return {uploaded: false, userImgURL: null};
+  }
+}
+
+export async function uploadManyToS3(mediaData: MultiMediaData, url: string, otherData?: any, token?: string) {
+  try {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Authorization': token != null || token != undefined ? `Bearer ${token}` : "",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        fileName: mediaData.name, // ["img1", "video1"]
+        fileType: mediaData.mimeType, // ["image/jpeg", "video/mp4"]
+        ...otherData
+      })
+    });
+
+    const uploadUrls = await res.json();
+    // console.log("upload url is:", uploadUrls);
+
+    if(uploadUrls.success == false) return {uploaded: false, userImgURL: null};
+
+    let images, blobs;
+    try {
+      images = await Promise.all(mediaData.uri.map(async (uri) => await fetch(uri)));
+      blobs = await Promise.all(images.map(async (image) => await image.blob()));
+    } catch (err) {
+      console.log(`Error while changing the image to blob:`, err);
+      return {uploaded: false, userImgURL: null}
+    }
+
+    let uploadResponses;
+    try {
+      uploadResponses = await Promise.all(blobs.map(async (blob, index) => {
+        const uploadResponse = await fetch(uploadUrls["uploadURLs"][index], {
+          method: 'PUT',
+          body: blob,
+          headers: {'Content-Type': mediaData.mimeType[index]},
+        });
+  
+        return uploadResponse.ok;
+      }));
+    } catch (err) {
+      console.log(`Error while uploading blobs to s3`, err);
+      return {uploaded: false, userImgURL: null}
+    }
+
+    console.log(uploadResponses);
+    if (uploadResponses.every((response) => response)) {
+      console.log('Uploaded successfully');
+      return {uploaded: true, userImgURL: uploadUrls["fileURL"]};
+    } else {
+      console.error('Upload failed');
+      return {uploaded: false, userImgURL: null};
+    }
+
+    // for (let i = 0; i < mediaData.uri.length; i++) {
+    //   const image = await fetch(mediaData.uri[i]);
+    //   const blob = await image.blob();  
+
+    //   const uploadResponse = await fetch(uploadUrls["uploadURL"][i], {
+    //     method: 'PUT',
+    //     body: blob,
+    //     headers: {'Content-Type': mediaData.mimeType[i]},
+    //   });
+
+    //   if (uploadResponse.ok) {
+    //     console.log('Uploaded successfully');
+    //     return {uploaded: true, userImgURL: uploadUrls["fileURL"][i]};
+    //   } else {
+    //     console.error('Upload failed');
+    //     const result = await uploadResponse.text();
+    //     console.log(result);
+    //   }
+    // }
+  } catch (err) {
+    console.log(`Error while uploading the file in uploadManyToS3:`, err);
+    return {uploaded: false, userImgURL: null}
   }
 }
 

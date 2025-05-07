@@ -6,13 +6,13 @@ import { useEffect, useState } from "react";
 import { Text, View } from "react-native";
 import { useSelector } from "react-redux";
 
-export default function UserNetworkList() {
+export default function AllUserNetworkList() {
   const baseurl = process.env.EXPO_PUBLIC_BASE_URL || "http://192.168.252.240:3000";
   const token = useSelector((state: any) => state.reelzUserToken.jwtToken);
   const { id, network } = useLocalSearchParams();
 
-  const [followers, setFollowers] = useState([]);
-  const [searchFollowers, setSearchFollowers] = useState('');
+  const [networkList, setNetworkList] = useState([]);
+  const [searchNetworkList, setSearchNetworkList] = useState('');
   const [isSearching, setIsSearching] = useState(false);
 
   useEffect(() => {
@@ -21,23 +21,21 @@ export default function UserNetworkList() {
       const list = await getData(`${baseurl}/api/user/${id}/${network}`, token);
       const data = await list?.json();
 
-      if(data.success && !!data.followers) {
-        setFollowers(data.followers);
-      }
+      if(data.success && !!data.followers) {setNetworkList(data.followers);}
     }
 
     getList();
   }, []);
 
-  if(!!!followers.length) return (<></>);
+  if(!!!networkList.length) return (<></>);
 
   return (
     <View>
-      <SearchBar searchTerm={searchFollowers} setSearchTerm={setSearchFollowers}
+      <SearchBar searchTerm={searchNetworkList} setSearchTerm={setSearchNetworkList}
         isSearching={isSearching} setIsSearching={setIsSearching}
       />
       <LegendList
-        data={followers}
+        data={networkList}
         recycleItems={true}
         keyExtractor={(item) => item.id}
         renderItem={({ item, index }) => {

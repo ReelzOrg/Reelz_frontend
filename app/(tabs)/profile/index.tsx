@@ -1,4 +1,3 @@
-// Add the Profile.tsx file here
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useMemo, useState } from "react";
 import { StyleSheet, View } from "react-native";
@@ -6,13 +5,13 @@ import { ScrollView } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
 
-import { useTheme } from "@/context/themeContext";
 import { getData } from "@/utils";
 import { setUser } from "@/state/slices";
 import { CustomTheme, UserObject, UserProfileResponse } from "@/utils/types";
 import TabSwitch from "@/components/profileComponents/TabSwitch";
 import UserBasicInfo from "@/components/profileComponents/basicInfo";
 import { ShowPosts } from "@/components";
+import { useTheme } from "@/hooks/useTheme";
 
 const createStyles = (theme: CustomTheme) => StyleSheet.create({
   container: {
@@ -27,8 +26,11 @@ export default function Profile() {
   const baseurl = process.env.EXPO_PUBLIC_BASE_URL || "http://192.168.252.240:3000";
   const dispatch = useDispatch();
   const token = useSelector((state: any) => state.reelzUserToken.jwtToken);
-  // const user = useSelector((state: any) => state.user);
-  const [user, setUserState] = useState<UserObject | null>(null);
+  
+  //if the user just loggedin then we could use the user saved in the redux store but most of the time
+  //the user might be already loggedin so we will have to fetch the data from the server
+  // const initialUser: UserObject = useSelector((state: any) => state.user);
+  const [user, setUserState] = useState<UserProfileResponse | null>(null);
   const [posts, setPosts] = useState([]);
 
   const theme = useTheme();
@@ -39,19 +41,19 @@ export default function Profile() {
       const url = `${baseurl}/api/user/me`;
       const userProfile = await getData(url, token);
       const data = await userProfile?.json();
-      console.log("user data is: ", data.user);
-      setUserState(data.user);
+      // console.log("user data is: ", data.user);
+      setUserState({...data.user, isUserAcc: true});
       setPosts(data.posts);
       dispatch(setUser(data.user));
     }
 
-    //if the wifi or mobile data is weak or is offline then get the data from the redux store
+    //get the data from the redux store
     //add an if condition here to check the user variable and if the user is null then get the data
-    // from the redux store
+    //from the redux store
     getUserData();
   }, []);
 
-  console.log("The posts are:", posts)
+  // console.log("The posts are:", posts)
 
   return (
     <SafeAreaView style={{ backgroundColor: theme.background, flex: 1 }}>

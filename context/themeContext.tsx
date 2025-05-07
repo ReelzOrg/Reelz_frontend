@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import { Colors } from "@/contants/Colors";
 import { CustomTheme } from "@/utils/types";
 
-const ThemeContext = createContext<CustomTheme | undefined>(undefined);
+export const ThemeContext = createContext<CustomTheme | undefined>(undefined);
 
 export function ThemeProvider({children}: {children: React.ReactNode}) {
   const themeMode = useSelector((state: any) => state.theme.mode);
@@ -15,13 +15,4 @@ export function ThemeProvider({children}: {children: React.ReactNode}) {
       {children}
     </ThemeContext.Provider>
   );
-}
-
-// Custom hook to use the theme without unnecessary re-renders
-export function useTheme() {
-  const context = useContext(ThemeContext);
-  if (!context) {
-    throw new Error("useTheme must be used within a ThemeProvider");
-  }
-  return context;
 }

@@ -8,11 +8,11 @@ import { StatusBar } from "expo-status-bar";
 
 import { isEmailValid, isPasswordValid, postData, uploadImagetoS3 } from "@/utils";
 import { placeholder } from "@/contants/assets";
-import { useTheme } from "@/context/themeContext";
 import { TextField, PressableProfilePhoto } from "@/components";
 import { saveToken } from "@/utils/storage";
 import { CustomTheme, SimpleImage } from "@/utils/types";
 import { setUser, setJwtToken } from "@/state/slices";
+import { useTheme } from "@/hooks/useTheme";
 
 const createStyles = (theme: CustomTheme) => StyleSheet.create({
   container: {
@@ -113,7 +113,7 @@ export default function RegisterScreen() {
       <ScrollView>
         <View style={styles.container}>
           <View style={{ alignItems: 'center', width: "100%" }}>
-            <PressableProfilePhoto userProfilePhoto={userImage}  userProfilePhotoUpdater={setUserImage} />
+            <PressableProfilePhoto userProfilePhoto={userImage} userProfilePhotoUpdater={setUserImage} />
             <TextField
               value={userData.username}
               onUserInput={(value: string) => handleFormInput(value, "username")}
@@ -196,11 +196,18 @@ export default function RegisterScreen() {
                 if (!userData.first_name) { console.log("First Name is required"); return; }
                 if (!userData.username) { console.log("Username is required"); return; }
 
+                //save a original size image - for viewing
+                //save a medium size image - for displaying on profile and stories
+                //save a very small size - for posts & network list
                 let userDP = await uploadImagetoS3({
                   mimeType: userImage.mimeType,
                   uri: userImage.uri == "" ? placeholder : userImage.uri,
                   name: `${userData.username}_DP`
                 })
+                // let userDP = await postData("http://10.0.0.246:3000/api/auth/register/upload-profile-photo", {
+                //   fileName: `${userData.username}_DP`,
+                //   fileType: userImage.mimeType
+                // }, token)
 
                 if (userDP && !userDP.uploaded) { /**user img could not be saved in the s3 bucket */ }
                 // else { setUserData({...userData, imgUrl: userDP?.userImgURL}) }

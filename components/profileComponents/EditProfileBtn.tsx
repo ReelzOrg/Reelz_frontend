@@ -1,10 +1,10 @@
 import { Text, StyleSheet, View } from "react-native";
 
 import { CustomTheme } from "@/utils/types";
-import { useTheme } from "@/context/themeContext";
 import { useEffect, useMemo } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "expo-router";
+import { useTheme } from "@/hooks/useTheme";
 
 const createStyles = (theme: CustomTheme) => StyleSheet.create({
   editProfileBtnStyle: {

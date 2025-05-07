@@ -7,7 +7,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useSelector } from "react-redux";
 
 import { SearchBar, SearchedAccTile, TextField } from "@/components";
-import { useTheme } from "@/context/themeContext";
+import { useTheme } from "@/hooks/useTheme";
+
 
 export default function Explore() {
   const themeMode = useSelector((state: any) => state.theme.mode);

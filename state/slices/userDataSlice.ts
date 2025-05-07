@@ -19,8 +19,8 @@ const userSlice = createSlice({
   initialState: initialState,
   reducers: {
     setUser: (state, action) => {
-      console.log("We are going to save the user info")
-      console.log(action.payload)
+      // console.log("We are going to save the user info")
+      // console.log(action.payload)
       try {
         state._id = action.payload._id;
         state.username = action.payload.username;
@@ -32,9 +32,9 @@ const userSlice = createSlice({
         state.post_count = action.payload.post_count ?? 0;
         state.profile_picture = action.payload.profile_picture;
 
-        console.log("user data is saved in redux store")
-        console.log(action.payload)
-        console.log("=================================")
+        // console.log("user data is saved in redux store")
+        // console.log(action.payload)
+        // console.log("=================================")
       } catch(err) {
         //this try catch is to prevent any previous errors to maybe not allow the request to be made properly 
         //if the req doesnt go through then the server will respond with just a string message and hence

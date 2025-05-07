@@ -7,10 +7,10 @@ import { ScrollView } from "react-native-gesture-handler";
 
 import StoryView from "@/components/StoryView";
 import SizedBox from "@/components/SizedBox";
-import { useTheme } from "@/context/themeContext";
 import { Link } from "expo-router";
 import { useDispatch, useSelector } from "react-redux";
 import { CustomTheme } from "@/utils/types";
+import { useTheme } from "@/hooks/useTheme";
 
 const createStyles = (theme: CustomTheme) => StyleSheet.create({
   container: {

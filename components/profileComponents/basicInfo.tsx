@@ -4,11 +4,13 @@ import { useMemo } from "react";
 import { FontAwesome } from "@expo/vector-icons";
 
 import { placeholder } from "@/contants/assets";
-import { useTheme } from "@/context/themeContext";
-import { CustomTheme, UserProfileResponse, FollowStatus } from "@/utils/types";
+// import { useTheme } from "@/context/themeContext";
+// import { CustomTheme, UserProfileResponse, FollowStatus } from "@/utils/types";
+import { CustomTheme, UserProfileResponse } from "@/utils/types";
 import FollowBtn from "./followBtn";
 import EditProfileBtn from "./EditProfileBtn";
 import DiscoverPeopleBtn from "./DiscoverPeopleBtn";
+import { useTheme } from "@/hooks/useTheme";
 
 const createStyles = (theme: CustomTheme) => StyleSheet.create({
   userInfo: {
@@ -30,16 +32,15 @@ export default function UserBasicInfo({ user, addFollowBtn = false }: { user: Us
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   const router = useRouter();
+  // console.log("is this user acc?", user?.isUserAcc)
 
   return (
     <View style={styles.userInfo}>
       <View style={{ flexDirection: 'row', justifyContent: "space-between", alignItems: 'center' }}>
         <Text style={{ color: theme.text, fontSize: 20 }}>{user?.username}</Text>
-        <TouchableOpacity onPress={() => {
-          //go to the settings page
-        }}>
+        <Link href={"/(tabs)/profile/settings"}>
           <FontAwesome name="bars" color={theme.text} size={20} />
-        </TouchableOpacity>
+        </Link>
       </View>
 
       <View style={{ marginTop: 20, flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between' }}>
@@ -55,8 +56,12 @@ export default function UserBasicInfo({ user, addFollowBtn = false }: { user: Us
               <Text style={{ fontSize: 20, fontWeight: "heavy", color: theme.text }}>{user ? user?.post_count : 0}</Text>
               <Text style={{color: theme.text}}>Posts</Text>
             </View>
+            {/* add a link component here instead of pressable */}
             <Pressable onPress={() => {
-              router.push(`/user/(network)?id=${user?._id}&network=followers`);
+              user?.isUserAcc
+              ? router.push(`/(tabs)/profile/network?id=${user?._id}&network=followers`)
+              : router.push(`/user/(network)?id=${user?._id}&network=followers`);
+              // router.push(`/user/(network)?id=${user?._id}&network=followers`);
             }}>
               <View style={{ alignItems: 'center' }}>
                 <Text style={{ fontSize: 20, fontWeight: "heavy", color: theme.text }}>{user ? user?.follower_count : 0}</Text>
@@ -64,7 +69,10 @@ export default function UserBasicInfo({ user, addFollowBtn = false }: { user: Us
               </View>
             </Pressable>
             <Pressable onPress={() => {
-              router.push(`/user/(network)?id=${user?._id}&network=following`);
+              user?.isUserAcc
+              ? router.push(`/(tabs)/profile/network?id=${user?._id}&network=following`)
+              : router.push(`/user/(network)?id=${user?._id}&network=following`);
+              // router.push(`/user/(network)?id=${user?._id}&network=following`);
             }}>
               <View style={{ alignItems: 'center' }}>
                 <Text style={{ fontSize: 20, fontWeight: "heavy", color: theme.text }}>{user ? user?.following_count : 0}</Text>
@@ -74,7 +82,7 @@ export default function UserBasicInfo({ user, addFollowBtn = false }: { user: Us
           </View>
           
           {/* follow button */}
-          {addFollowBtn && <FollowBtn userPrivacyData={{isUserAcc: user?.isUserAcc || false, followStatus: user?.followStatus || FollowStatus.NONE, _id: user?._id || '', is_private: user?.is_private || false}} />}
+          {addFollowBtn && <FollowBtn userPrivacyData={{isUserAcc: user?.isUserAcc || false, followStatus: user?.followStatus || "none", _id: user?._id || '', is_private: user?.is_private || false}} />}
           {!addFollowBtn && <View style={{flexDirection: "row", gap: 8}}>
             <EditProfileBtn />
             <DiscoverPeopleBtn />

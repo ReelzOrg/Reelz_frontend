@@ -50,6 +50,8 @@ export default function AllUserProfilePage() {
       <ScrollView>
         <UserBasicInfo user={user} addFollowBtn={!user.isUserAcc} />
 
+        {/* from the request we make to fetch the user profile we get if the logged in user follows
+        the requested user. only if the logged in user follow the requested user then fetch the followers & following */}
         {user.is_private && (user.followStatus == "none" || user.followStatus == "requested" || user.followStatus == "blocked")
           ? <Text>You can not see the posts of this user</Text>
           : <Text>You can see the posts of this user</Text>

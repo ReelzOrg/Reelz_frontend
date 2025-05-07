@@ -22,6 +22,12 @@ export interface MediaData {
   name: string
 }
 
+export interface MultiMediaData {
+  mimeType: string[];
+  uri: string[];
+  name: string[]
+}
+
 export interface CustomTheme {
   background: string;
   background_disabled: string;
@@ -31,6 +37,15 @@ export interface CustomTheme {
   btn_primary: string;
   mode: "dark" | "light";
 };
+
+//change to BasicUserObject
+export interface BasicUserObject {
+  _id: string;
+  username: string;
+  first_name: string;
+  last_name: string | null;
+  profile_picture: string | null;
+}
 
 export interface UserObject {
   _id: string | null;
@@ -45,12 +60,14 @@ export interface UserObject {
   is_private: boolean;
 }
 
-export enum FollowStatus {
-  FOLLOWS = "follows",
-  NONE = "none",
-  REQUESTED = "requested",
-  BLOCKED = "blocked"
-};
+// enums create JavaScript objects at runtime and files with extention .d.ts dont create any javascript files
+//hence if you export this enum from this file it will throw an error
+// export enum FollowStatus {
+//   FOLLOWS = "follows",
+//   NONE = "none",
+//   REQUESTED = "requested",
+//   BLOCKED = "blocked"
+// };
 
 // export interface FollowTypes {
 //   followStatus: FollowStatus.FOLLOWS | FollowStatus.NONE | FollowStatus.REQUESTED | FollowStatus.BLOCKED;
@@ -64,19 +81,22 @@ export interface UserProfileResponse extends UserObject {
 
 export interface PostWithMediaObject {
   _id: string;
-  user_id: string;
+  user_id?: string;
   caption: string;
-  mediaUrl: string;
-  mediaType: string;
+  like_count: number;
+  comment_count: number;
+  share_count: number;
   createdAt: string;
   updatedAt: string;
   media_items: MediaItem[];
+  // mediaUrl: string;
+  // mediaType: string;
 }
 
 export interface MediaItem {
   _id: string;
-  mediaUrl: string;
-  mediaType: string;
+  media_url: string;
+  media_type: string;
   position: number;
-  updatedAt: string;
+  updated_at: string;
 }
