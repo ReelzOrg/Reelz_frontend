@@ -47,6 +47,15 @@ export interface BasicUserObject {
   profile_picture: string | null;
 }
 
+//TODO: change the id to _id (the key '_id' here should be same as the the key in typesenseFuns.js file in the server )
+export interface MinUserObject {
+  id: string,
+  username: string;
+  first_name: string;
+  last_name: string;
+  created_at: number;
+}
+
 export interface UserObject {
   _id: string | null;
   username: string | null;

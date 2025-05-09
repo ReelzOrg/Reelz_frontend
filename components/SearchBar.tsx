@@ -5,7 +5,7 @@ import { useRef, useState } from "react";
 import { useTheme } from "@/hooks/useTheme";
 
 export default function SearchBar({ searchTerm, setSearchTerm, isSearching, setIsSearching }:
-  { searchTerm: string, setSearchTerm: React.Dispatch<React.SetStateAction<string>>,
+  { searchTerm: string, setSearchTerm: (searchTerm: string) => void,
     isSearching: boolean, setIsSearching: React.Dispatch<React.SetStateAction<boolean>>
    }) {
   const theme = useTheme();

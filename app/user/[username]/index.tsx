@@ -6,9 +6,9 @@ import { useSelector } from "react-redux";
 import UserBasicInfo from "@/components/profileComponents/basicInfo";
 import { getData } from "@/utils";
 import { CustomTheme, UserObject, UserProfileResponse } from "@/utils/types";
-import { useTheme } from "@/context/themeContext";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useTheme } from "@/hooks/useTheme";
 
 const createStyles = (theme: CustomTheme) => StyleSheet.create({
   container: {

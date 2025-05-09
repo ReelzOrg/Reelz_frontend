@@ -37,7 +37,7 @@ export default function AllUserNetworkList() {
       <LegendList
         data={networkList}
         recycleItems={true}
-        keyExtractor={(item) => item.id}
+        // keyExtractor={(item) => item.id}
         renderItem={({ item, index }) => {
           return (
             <></>

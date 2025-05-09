@@ -1,4 +1,4 @@
-import { Link } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import { View, Text, Image, Pressable } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { useSelector } from "react-redux";
@@ -11,12 +11,16 @@ export default function SearchedAccTile({username, first_name, last_name, profil
   const token = useSelector((state: any) => state.reelzUserToken.jwtToken);
 
   const theme = useTheme();
+  const router = useRouter();
 
   return (
+    // <TouchableOpacity onPress={() => {
+    //   router.push("/")
+    // }}>
     <Link style={{}} href={{
       pathname: "/user/[username]",
-      params: { username: username }
-    }} asChild>
+      params: { username: username}
+    }}>
       <View style={{flexDirection: "row", alignItems: "center", padding: 8}}>
         {profile_picture
           ? (<Image src={profile_picture} style={{width: 50, height: 50, borderRadius: 25}} />)
@@ -28,5 +32,6 @@ export default function SearchedAccTile({username, first_name, last_name, profil
         </View>
       </View>
     </Link>
+    // </TouchableOpacity>
   );
 }

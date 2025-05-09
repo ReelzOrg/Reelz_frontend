@@ -1,11 +1,11 @@
 import { useMemo, useState } from "react";
 import { Text, StyleSheet, TouchableOpacity, View } from "react-native";
 
-import { useTheme } from "@/context/themeContext";
 import { getData, postData } from "@/utils";
 import { CustomTheme } from "@/utils/types";
 import { useSelector } from "react-redux";
 import { FollowStatus } from "../utils";
+import { useTheme } from "@/hooks/useTheme";
 
 const createStyles = (theme: CustomTheme) => StyleSheet.create({
   followBtnDefault: {

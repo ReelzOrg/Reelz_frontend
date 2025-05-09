@@ -19,8 +19,8 @@ export default function Layout() {
           }}>
             <Stack.Screen name="(tabs)/home" options={{ headerShown: false }} />
             <Stack.Screen name="(auth)/login" options={{ headerShown: false }} />
-            <Stack.Screen name="user/[username]" options={{ headerShown: false }} />
-            <Stack.Screen name='user/(network)' options={{ headerShown: false }} />
+            <Stack.Screen name="user/[username]/index" options={{ headerShown: false }} />
+            {/* <Stack.Screen name='user/[username]/[network]' options={{ headerShown: false }} /> */}
           </Stack>
         </ThemeProvider>
       </Provider>
