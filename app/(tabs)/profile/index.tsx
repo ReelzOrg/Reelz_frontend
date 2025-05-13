@@ -6,7 +6,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
 
 import { getData } from "@/utils";
-import { setUser } from "@/state/slices";
 import { CustomTheme, UserObject, UserProfileResponse } from "@/utils/types";
 import TabSwitch from "@/components/profileComponents/TabSwitch";
 import UserBasicInfo from "@/components/profileComponents/basicInfo";
@@ -26,11 +25,13 @@ export default function Profile() {
   const baseurl = process.env.EXPO_PUBLIC_BASE_URL || "http://192.168.252.240:3000";
   const dispatch = useDispatch();
   const token = useSelector((state: any) => state.reelzUserToken.jwtToken);
+  const user = {...useSelector((state: any) => state.user), isUserAcc: true};
+  // console.log("the user is:", user)
   
   //if the user just loggedin then we could use the user saved in the redux store but most of the time
   //the user might be already loggedin so we will have to fetch the data from the server
   // const initialUser: UserObject = useSelector((state: any) => state.user);
-  const [user, setUserState] = useState<UserProfileResponse | null>(null);
+  // const [user, setUserState] = useState<UserProfileResponse | null>(null);
   const [posts, setPosts] = useState([]);
 
   const theme = useTheme();
@@ -38,13 +39,14 @@ export default function Profile() {
 
   useEffect(() => {
     async function getUserData() {
-      const url = `${baseurl}/api/user/me`;
-      const userProfile = await getData(url, token);
-      const data = await userProfile?.json();
-      // console.log("user data is: ", data.user);
-      setUserState({...data.user, isUserAcc: true});
+      //make a request to user/posts to fetch only the posts
+      // const url = `${baseurl}/api/user/me`;
+      const url = `${baseurl}/api/user/posts`;
+      const userPosts = await getData(url, token);
+      const data = await userPosts?.json();
+      // setUserState({...data.user, isUserAcc: true});
       setPosts(data.posts);
-      dispatch(setUser(data.user));
+      // dispatch(setUser(data.user));
     }
 
     //get the data from the redux store
@@ -52,8 +54,6 @@ export default function Profile() {
     //from the redux store
     getUserData();
   }, []);
-
-  // console.log("The posts are:", posts)
 
   return (
     <SafeAreaView style={{ backgroundColor: theme.background, flex: 1 }}>

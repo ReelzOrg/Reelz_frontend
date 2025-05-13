@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 
 import UserBasicInfo from "@/components/profileComponents/basicInfo";
 import { getData } from "@/utils";
-import { CustomTheme, UserObject, UserProfileResponse } from "@/utils/types";
+import { CustomTheme, PostWithMediaObject, UserObject, UserProfileResponse } from "@/utils/types";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTheme } from "@/hooks/useTheme";
@@ -28,6 +28,7 @@ export default function AllUserProfilePage() {
   //we are not using the username now
   const { username } = useLocalSearchParams();
   const [user, setUser] = useState<UserProfileResponse | null>(null);
+  const [userPosts, setUserPosts] = useState<PostWithMediaObject | null>(null);
   console.log("We are in other user profile page");
 
   useEffect(() => {
@@ -37,6 +38,7 @@ export default function AllUserProfilePage() {
       console.log("user data is: ", userData);
       if(userData.success) {
         setUser(userData.user);
+        setUserPosts(userData.posts)
       }
     }
 

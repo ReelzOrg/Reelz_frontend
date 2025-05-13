@@ -20,6 +20,7 @@ export default function Explore() {
   const [isSearching, setIsSearching] = useState<boolean>(false);
   const [searchedUsers, setSearchedUsers] = useState<MinUserObject[]>();
 
+  //TODO: create a separate search api for the frontend
   async function search(searchTerm: string) {
     try {
       const results = await getData(`${baseurl}/api/search?searchTerm=${searchTerm.trim()}`);

@@ -42,8 +42,11 @@ export default function FollowBtn({ userPrivacyData }: { userPrivacyData: { isUs
     let url: string = `${baseurl}/api/user/${userPrivacyData?._id}/`;
     if(status == FollowStatus.NONE) url += "unfollow";
     else url += "follow";
+    console.log("THIS is the url we are using to follow/unfollow:", url);
     const followReq = await getData(url, token);
-    return await followReq?.json();
+    const followReqResponse = await followReq?.json();
+    console.log(followReqResponse);
+    return followReqResponse;
   }
 
   // handle the block status from backend & not show the requested user during

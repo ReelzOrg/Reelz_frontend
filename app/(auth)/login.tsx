@@ -6,13 +6,13 @@ import { ScrollView } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch } from "react-redux";
 
-import { useTheme } from "@/context/themeContext";
 import { TextField } from "@/components";
 import { isEmailValid, postData } from "@/utils";
 import { saveToken } from "@/utils/storage";
 import { logo_t } from "@/contants/assets";
 import { CustomTheme } from "@/utils/types";
 import { setJwtToken, setUser } from "@/state/slices";
+import { useTheme } from "@/hooks/useTheme";
 
 const createStyles = (theme: CustomTheme) => StyleSheet.create({
   container: {

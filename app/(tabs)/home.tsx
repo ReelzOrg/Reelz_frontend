@@ -5,12 +5,13 @@ import { StatusBar } from "expo-status-bar"
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { ScrollView } from "react-native-gesture-handler";
 
-import StoryView from "@/components/StoryView";
-import SizedBox from "@/components/SizedBox";
+import { StoryView, SizedBox, PostView } from "@/components";
 import { Link } from "expo-router";
 import { useDispatch, useSelector } from "react-redux";
 import { CustomTheme } from "@/utils/types";
 import { useTheme } from "@/hooks/useTheme";
+import { getData } from "@/utils";
+import { setUser } from "@/state/slices";
 
 const createStyles = (theme: CustomTheme) => StyleSheet.create({
   container: {
@@ -20,15 +21,25 @@ const createStyles = (theme: CustomTheme) => StyleSheet.create({
 
 export default function Index() {
   const baseurl = process.env.EXPO_PUBLIC_BASE_URL || "http://192.168.252.240:3000";
-  // const dispatch = useDispatch();
+  const dispatch = useDispatch();
   const token = useSelector((state: any) => state.reelzUserToken.jwtToken);
 
   const theme = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
+  const user = useSelector((state: any) => state.user);
   
   useEffect(() => {
-    //get the user image and notifications
-    //probably use graphql to only fetch the required data
+    async function getUserData() {
+      const loggedInUser = await getData(`${baseurl}/api/user`, token);
+      const userData = await loggedInUser?.json();
+      dispatch(setUser(userData.user[0]));
+    }
+
+    console.log("the user is:", user.username);
+
+    if(!user.username) {
+      getUserData();
+    }
   }, []);
 
   return (
@@ -47,10 +58,14 @@ export default function Index() {
           </View>
         </View>
         <SizedBox height={14} />
+
+        {/* Story View */}
         <ScrollView horizontal={true}>
           <StoryView />
         </ScrollView>
-        {/* <PostView /> */}
+
+        {/* User Feed */}
+        <PostView />
       </View>
       </ScrollView>
       <StatusBar style={theme.mode == 'dark' ? 'light' : 'dark'} />
