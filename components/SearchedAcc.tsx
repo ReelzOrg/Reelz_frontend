@@ -19,7 +19,7 @@ export default function SearchedAccTile({username, first_name, last_name, profil
     // }}>
     <Link style={{}} href={{
       pathname: "/user/[username]",
-      params: { username: username}
+      params: {username: username}
     }}>
       <View style={{flexDirection: "row", alignItems: "center", padding: 8}}>
         {profile_picture

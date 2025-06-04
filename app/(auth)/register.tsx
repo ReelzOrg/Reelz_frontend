@@ -36,11 +36,9 @@ export default function RegisterScreen() {
   const [userData, setUserData] = useState({
     username: '', email: '', password: '', first_name: '', last_name: '', imgUrl: ''
   });
-  const [userImage, setUserImage] = useState<SimpleImage>({
-    fileSize: 0,
+  const [userImage, setUserImage] = useState<{ mimeType: string; uri: string; }>({
     mimeType: "",
     uri: "",
-    width: 0, height: 0,
   })
   const [confirmPass, setConfirmPass] = useState('');
 

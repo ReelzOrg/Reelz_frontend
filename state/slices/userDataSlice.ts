@@ -4,6 +4,7 @@ import { createSlice } from "@reduxjs/toolkit";
 let initialState: UserObject = {
   _id: null,
   username: null,
+  email: null,
   first_name: null,
   last_name: null,
   bio: null,
@@ -11,6 +12,10 @@ let initialState: UserObject = {
   following_count: 0,
   post_count: 0,
   profile_picture: null,
+  dob: null,
+  phone: null,
+  gender: null,
+  websites: [],
   is_private: false,
 };
 
@@ -24,6 +29,7 @@ const userSlice = createSlice({
       try {
         state._id = action.payload._id;
         state.username = action.payload.username;
+        state.email = action.payload.email;
         state.first_name = action.payload.first_name;
         state.last_name = action.payload.last_name;
         state.bio = action.payload.bio;
@@ -31,6 +37,10 @@ const userSlice = createSlice({
         state.following_count = action.payload.following_count ?? 0;
         state.post_count = action.payload.post_count ?? 0;
         state.profile_picture = action.payload.profile_picture;
+        state.dob = action.payload.dob;
+        state.phone = action.payload.phone;
+        state.gender = action.payload.gender;
+        state.is_private = action.payload.is_private;
 
         // console.log("user data is saved in redux store")
         // console.log(action.payload)

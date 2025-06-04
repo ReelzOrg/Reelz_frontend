@@ -59,6 +59,7 @@ export interface MinUserObject {
 export interface UserObject {
   _id: string | null;
   username: string | null;
+  email: string | null;
   first_name: string | null;
   last_name: string | null;
   bio: string | null;
@@ -66,6 +67,10 @@ export interface UserObject {
   following_count: number;
   post_count: number;
   profile_picture: string | null;
+  dob: string | null;
+  phone: string | null;
+  gender: "male" | "female" | "other" | null;
+  websites: string[];
   is_private: boolean;
 }
 

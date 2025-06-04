@@ -6,7 +6,8 @@ import SearchBar from "./SearchBar";
 import PressableProfilePhoto from "./PressableProfilePhoto";
 import TopNavBar from "./TopNavBar";
 import DropDown from "./DropDown";
-import PostView from "./PostView";
+// We are not including this component here since it will create a circular import
+// import PostView from "./PostView";
 
 import UserBasicInfo from "./profileComponents/basicInfo";
 import ShowPosts from "./profileComponents/postTab";
@@ -18,4 +19,4 @@ import FollowBtn from "./profileComponents/followBtn";
 
 export { SizedBox, StoryView, TextField, SearchedAccTile, TabSwitch, DropDown,
   UserBasicInfo, EditProfileBtn, SearchBar, PressableProfilePhoto, ShowPosts,
-  TopNavBar, DiscoverPeopleBtn, SinglePostView, FollowBtn, PostView };
+  TopNavBar, DiscoverPeopleBtn, SinglePostView, FollowBtn };

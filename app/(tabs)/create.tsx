@@ -4,11 +4,11 @@ import * as MediaLibrary from "expo-media-library";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { useSelector } from "react-redux";
-import { LegendList, LegendListRef, LegendListRenderItemProps } from "@legendapp/list"
-
-import { CustomTheme } from "@/utils/types";
+import Video from "react-native-video";
 import { FontAwesome } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+
+import { CustomTheme } from "@/utils/types";
 import { navigateBack } from "@/utils";
 import { useTheme } from "@/hooks/useTheme";
 import InlineDropdown from "@/components/DropDown";
@@ -82,7 +82,7 @@ export default function CreateContent() {
   const [mediaLibPermission, requestMediaLibPermission] = MediaLibrary.usePermissions();
   const router = useRouter();
 
-  const [selectedImage, setSelectedImage] = useState<{id:string, uri: string, fileType: string}[]>([]);
+  const [selectedImage, setSelectedImage] = useState<MediaLibrary.Asset[]>([]);
   const [selectMultiple, setSelectMultiple] = useState<boolean>(false);
   // const [selectedImages, setSelectedImages] = useState<{id:string, uri: string, fileType: string}[]>([]);
 
@@ -106,12 +106,12 @@ export default function CreateContent() {
 
   function getFileType(filename: string) {
     if(filename.split(".")[1] == "jpg" || filename.split(".")[1] == "jpeg")
-      return "image/jpeg"
+      return "image"
     if(filename.split(".")[1] == "png") return "image/png"
     
     //add gifs too
     
-    return "video/mp4"
+    return "video"
   }
 
   async function changeAssets(album: MediaLibrary.Album) {
@@ -125,8 +125,8 @@ export default function CreateContent() {
     });
 
     setAssets(albumAssets.assets);
-    if(selectMultiple) setSelectedImage([...selectedImage, {id: albumAssets.assets[0].id, uri: albumAssets.assets[0].uri, fileType: getFileType(albumAssets.assets[0].filename)}]);
-    else setSelectedImage([{id: albumAssets.assets[0].id, uri: albumAssets.assets[0].uri, fileType: getFileType(albumAssets.assets[0].filename)}])
+    if(selectMultiple) setSelectedImage([...selectedImage, albumAssets.assets[0]]);
+    else setSelectedImage([albumAssets.assets[0]])
   }
 
   //select the album with the most assests
@@ -203,11 +203,11 @@ export default function CreateContent() {
           ? router.push({
             pathname: '/postContent/newpost',
             // params: selectedImage
-            params: {imgUri: selectedImage.map((item) => item.uri), id: selectedImage.map((item) => item.id), fileType: selectedImage.map((item) => item.fileType)}
+            params: {selectedMedia: JSON.stringify(selectedImage.map(item => item))}
           })
           : router.push({
             pathname: '/postContent/newpost',
-            params: {imgUri: selectedImage[0]?.uri, id: selectedImage[0]?.id, fileType: selectedImage[0]?.fileType}
+            params: {selectedMedia: JSON.stringify(selectedImage)}
           })
         }}>
           <Text style={{color: theme.text, fontSize: 30}}>Next</Text>
@@ -217,8 +217,9 @@ export default function CreateContent() {
       <View style={{margin: 1}}>
         {/* show selected image(s) */}
         {selectedImage.length == 1
-        ? <Image source={{ uri: selectedImage[0]?.uri }}
-        style={{height: height/2.5}} resizeMode="cover" />
+        ? selectedImage[0].filename.split(".")[1] == "jpg" || selectedImage[0].filename.split(".")[1] == "jpeg" || selectedImage[0].filename.split(".")[1] == "png"
+          ? <Image source={{ uri: selectedImage[0]?.uri }} style={{height: height/2.5}} resizeMode="cover" />
+          : <Video source={{ uri: selectedImage[0]?.uri }} style={{height: height/2.5}} resizeMode="cover" />
         // : <View style={{flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between'}}>
         //   {selectedImage.map((item, index) => (
         //     <Image key={index} source={{ uri: item.uri }} style={{width: width/2, height: height/4, margin: 1}} resizeMode="cover" />
@@ -227,8 +228,10 @@ export default function CreateContent() {
         : <FlatList
           data={selectedImage}
           horizontal={true}
-          renderItem={({item, index}: {item: {id:string, uri: string, fileType: string}, index: number}) => (
-            <Image key={index} source={{ uri: item.uri }} style={{width: width*2/3, height: height/2.5, margin: 8}} resizeMode="cover" />
+          renderItem={({item, index}: {item: {id:string, uri: string, filename: string}, index: number}) => (
+            item.filename.split(".")[1] == "jpg" || item.filename.split(".")[1] == "jpeg" || item.filename.split(".")[1] == "png"
+              ? <Image key={index} source={{ uri: item.uri }} style={{width: width*2/3, height: height/2.5, margin: 8}} resizeMode="cover" />
+              : <Video key={index} source={{ uri: item.uri }} style={{width: width*2/3, height: height/2.5, margin: 8}} resizeMode="contain" />
           )}
           keyExtractor={(item, index) => index.toString()}
         />
@@ -276,19 +279,26 @@ export default function CreateContent() {
           renderItem={({ item, index }) => { //:LegendListRenderItemProps<MediaLibrary.Asset>
             // console.log("something") <-- this will not log anything in the console if using LegendList
             return (
-            <TouchableOpacity onPress={() => {
+            <TouchableOpacity
+            onPress={() => {
               //first check if the image is already in the list
               if(selectedImage.find((image) => image.id === item.id)) {
                 setSelectedImage(selectedImage.filter((image) => image.id !== item.id));
                 return;
               }
 
+              console.log("The file type of selected image is:", item.mediaType)
+
               selectMultiple
-              ? setSelectedImage([...selectedImage, {id: item.id, uri: item.uri, fileType: getFileType(item.filename)}])
-              : setSelectedImage([{id: item.id, uri: item.uri, fileType: getFileType(item.filename)}])
+              ? setSelectedImage([...selectedImage, item])
+              : setSelectedImage([item])
               // setSelectedImage({id: item.id, uri: item.uri, fileType: getFileType(item.filename)})
             }}>
               <View style={{position: 'relative'}}>
+                {/* {item.mediaType == "photo"
+                  ? <Image key={item.id} source={{ uri: item.uri }} style={{ width: itemSize, height: itemSize, margin: 1 }} />
+                  : <Video key={item.id} source={{ uri: item.uri }} style={{ width: itemSize, height: itemSize, margin: 1 }} />
+                } */}
                 <Image key={item.id} source={{ uri: item.uri }} style={{ width: itemSize, height: itemSize, margin: 1 }} />
                 {selectedImage.find((image) => image.id === item.id) && (
                   <View style={styles.selectedOverlay}>

@@ -3,15 +3,8 @@ import { Alert, TouchableOpacity, Image, useWindowDimensions } from "react-nativ
 
 import { getMax, openCamera, openGallery, requestPermissions } from "@/utils";
 import { placeholder } from "@/contants/assets";
-import { SimpleImage } from "@/utils/types";
 
-export default function PressableProfilePhoto({ userProfilePhoto, userProfilePhotoUpdater, imageSize }: { userProfilePhoto: SimpleImage, userProfilePhotoUpdater: React.Dispatch<React.SetStateAction<{
-  fileSize: number;
-  mimeType: string;
-  uri: string;
-  width: number;
-  height: number;
-}>>, imageSize?: number }) {
+export default function PressableProfilePhoto({ userProfilePhoto, userProfilePhotoUpdater, imageSize }: { userProfilePhoto: { mimeType: string; uri: string; }, userProfilePhotoUpdater: React.Dispatch<React.SetStateAction<{ mimeType: string; uri: string; }>>, imageSize?: number }) {
   const { width } = useWindowDimensions();
   const defaultSize = useMemo(() => (width/2) - 70, [width]);
   const photoSize = useMemo(() => imageSize || getMax(100, defaultSize), [defaultSize, imageSize]);

@@ -5,6 +5,7 @@ import { View, Text, useWindowDimensions, StyleSheet, StyleProp, ViewStyle, Imag
 import { CustomTheme } from "@/utils/types";
 import { useTheme } from "@/hooks/useTheme";
 import { placeholder } from "@/contants/assets";
+import Video from "react-native-video";
 
 const createStyles = (theme: CustomTheme) => StyleSheet.create({
   container: {
@@ -107,10 +108,11 @@ export default function ShowPosts({ tab = "posts", data, numColumns, itemStyle }
           marginBottom: itemMargin,
         }
       ]}>
-        {/* We are taking the first image only because we are not supporting multiple images yet
-        and in this component we only want to show the first image */}
+        {/* We are taking the first image only because in this component we only want to show the first image */}
         {item.media_items
-        ? <Image src={item.media_items[0].media_url} resizeMode="cover" style={{width: "100%", height: "100%"}} />
+        ? item.media_items[0].media_type == "image"
+          ? <Image src={item.media_items[0].media_url} resizeMode="cover" style={{width: "100%", height: "100%"}} />
+          : <Video paused={true} source={{ uri: item.media_items[0].media_url }} resizeMode="cover" style={{width: "100%", height: "100%"}} />
         : <Image source={placeholder} style={{width: "100%", height: "100%"}}/>
         }
       </TouchableOpacity>

@@ -6,11 +6,11 @@ export default function StoryView() {
   const profilePhoto = useSelector((state: any) => state.user.profile_picture);
 
   return (
-    <View style={{ borderWidth: 2, borderColor: 'red'}}>
+    <View style={{ borderWidth: 3, borderColor: 'red', borderRadius: 50, padding: 4 }}>
       {/* s3 to get the image */}
       {profilePhoto
-        ? <Image src={profilePhoto} resizeMode="contain" borderRadius={35} style={{width: 70, height: 70}} />
-        : <Image source={placeholder} resizeMode="contain" borderRadius={35} style={{width: 70, height: 70}} />
+        ? <Image src={profilePhoto} resizeMode="cover" borderRadius={35} style={{width: 70, height: 70}} />
+        : <Image source={placeholder} resizeMode="cover" borderRadius={35} style={{width: 70, height: 70}} />
       }
       <Image source={Add} style={styles.addStoryBtn} />
     </View>
