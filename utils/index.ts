@@ -194,6 +194,8 @@ export async function uploadImagetoS3(mediaData: MediaData, otherData?: any, url
 
     if (uploadResponse && uploadResponse.ok) {
       console.log('Uploaded successfully');
+
+      //send a post request to the backend notifying that the upload has been 
       return {uploaded: true, userImgURL: uploadUrls["fileURL"]};
     } else {
       console.error('Upload failed');
@@ -234,15 +236,19 @@ export async function uploadManyToS3(mediaData: MultiMediaData, url: string, oth
   }
 
   const uploadUrls = await fetchS3Urls();
+  console.log("The upload urls are:", uploadUrls);
 
     const uploadPromises = mediaData.uri.map(async (item: string, index: number) => {
       try {
         const uploadResult = await FileSystem.uploadAsync(
-          uploadUrls["uploadURLs"][index],
+          uploadUrls["uploadURL"][index],
           item,
           {
             httpMethod: 'PUT',
             uploadType: FileSystem.FileSystemUploadType.BINARY_CONTENT,
+            headers: {
+              'Content-Type': mediaData.mimeType[index],
+            }
           }
         );
 
@@ -255,7 +261,18 @@ export async function uploadManyToS3(mediaData: MultiMediaData, url: string, oth
       }
     });
 
-    return Promise.all(uploadPromises);
+    const uploadResults = await Promise.all(uploadPromises);
+
+    const successfulUploads = uploadResults.filter((r: any) => r.success);
+    const failedUploads = uploadResults.filter((r: any) => !r.success);
+
+    console.log(`Success: ${successfulUploads.length}, Failed: ${failedUploads.length}`);
+    if(successfulUploads.length == mediaData.uri.length) {
+      return {uploaded: true, userImgURL: uploadUrls["fileURL"]};
+    } else {
+      console.log("There was an error uploading 1 or more files:", failedUploads)
+      return {uploaded: false, userImgURL: null}
+    }
 
     /*
     let images, blobs;

@@ -45,7 +45,9 @@ export default function Profile() {
       const userPosts = await getData(url, token);
       const data = await userPosts?.json();
       // setUserState({...data.user, isUserAcc: true});
-      console.log("The posts are:", data.posts[0].media_items)
+      for(let i = 0; i < data.posts.length; i++) {
+        console.log("The posts are:", data.posts[i].media_items)
+      }
       setPosts(data.posts);
       // dispatch(setUser(data.user));
     }
