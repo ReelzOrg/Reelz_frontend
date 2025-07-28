@@ -2,10 +2,11 @@ import { router } from "expo-router";
 import { useMemo } from "react";
 import { View, Text, useWindowDimensions, StyleSheet, StyleProp, ViewStyle, Image, Pressable, TouchableOpacity, FlatList } from "react-native";
 
-import { CustomTheme } from "@/utils/types";
+import { CustomTheme, PostWithMediaObject } from "@/utils/types";
 import { useTheme } from "@/hooks/useTheme";
 import { placeholder } from "@/contants/assets";
 import Video from "react-native-video";
+import { usePosts } from "@/hooks/usePosts";
 
 const createStyles = (theme: CustomTheme) => StyleSheet.create({
   container: {
@@ -44,15 +45,14 @@ const createStyles = (theme: CustomTheme) => StyleSheet.create({
   }
 });
 
-export default function ShowPosts({ tab = "posts", data, numColumns, itemStyle }: { tab?: "posts" | "reels", data: any, numColumns: number, itemStyle?: StyleProp<ViewStyle> }) {
+export default function ShowPosts({ tab = "posts", numColumns, itemStyle }: { tab?: "posts" | "reels", numColumns: number, itemStyle?: StyleProp<ViewStyle> }) {
   //data is a list of components to be displayed in the grid
   const { width } = useWindowDimensions();
 
   const itemMargin = 2;
   const theme = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
-
-  // console.log("the posts are:", data);
+  const { posts, fetchPosts } = usePosts();
 
   // Calculate item dimensions
   const { itemWidth, itemHeight } = useMemo(() => {
@@ -66,33 +66,33 @@ export default function ShowPosts({ tab = "posts", data, numColumns, itemStyle }
 
   // Format data to include empty items for the last row if needed
   const formattedData = useMemo(() => {
-    const completeRows = Math.ceil(data.length / numColumns);
+    const completeRows = Math.ceil(posts.length / numColumns);
     const totalItems = completeRows * numColumns;
-    const formatted = [...data];
+    const formatted = [...posts];
     
     // Add empty items to complete the last row
     while (formatted.length < totalItems) {
-      formatted.push({ _id: `empty-${formatted.length}`, empty: true });
+      formatted.push({ _id: `empty-${formatted.length}`, caption: '', like_count: 0, comment_count: 0, share_count: 0, createdAt: '', updatedAt: '', media_items: [], isEmpty: true });
     }
     
     return formatted;
-  }, [data, numColumns]);
+  }, [posts, numColumns]);
 
-  const renderItem = ({item, index}: {item: any, index: number}) => {
+  const renderItem = ({item, index}: {item: PostWithMediaObject, index: number}) => {
     //if('empty' in item) {
-    if (item.empty) {
+    if (item.isEmpty) {
       return <View style={[styles.item, styles.itemInvisible, { width: itemWidth, marginHorizontal: itemMargin / 2 }]} />;
     }
     return (
       <TouchableOpacity
       onPress={() => {
         const start = Math.max(0, index - 2);
-        const end = Math.min(data.length, index + 3);
+        const end = Math.min(posts.length, index + 3);
 
         router.push({
           pathname: "/(tabs)/profile/allposts",
           params: {
-            posts: JSON.stringify(data.slice(start, end)), // Pass 5 posts around the selected post
+            posts: JSON.stringify(posts.slice(start, end)), // Pass 5 posts around the selected post
             localPostIndex: index - start,
             globalPostIndex: index,
             // user: 
@@ -125,6 +125,8 @@ export default function ShowPosts({ tab = "posts", data, numColumns, itemStyle }
         data={formattedData}
         keyExtractor={(item) => item._id}
         scrollEnabled={false}
+        onEndReached={fetchPosts}
+        onEndReachedThreshold={0.2}
         renderItem={renderItem}
         numColumns={numColumns}
         showsVerticalScrollIndicator={false}

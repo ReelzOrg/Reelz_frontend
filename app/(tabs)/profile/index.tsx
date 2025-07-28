@@ -1,12 +1,11 @@
 import { StatusBar } from "expo-status-bar";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { StyleSheet, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
 
-import { getData } from "@/utils";
-import { CustomTheme, UserObject, UserProfileResponse } from "@/utils/types";
+import { CustomTheme } from "@/utils/types";
 import TabSwitch from "@/components/profileComponents/TabSwitch";
 import UserBasicInfo from "@/components/profileComponents/basicInfo";
 import { ShowPosts } from "@/components";
@@ -32,30 +31,15 @@ export default function Profile() {
   //the user might be already loggedin so we will have to fetch the data from the server
   // const initialUser: UserObject = useSelector((state: any) => state.user);
   // const [user, setUserState] = useState<UserProfileResponse | null>(null);
-  const [posts, setPosts] = useState([]);
 
   const theme = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   useEffect(() => {
-    async function getUserData() {
-      //make a request to user/posts to fetch only the posts
-      // const url = `${baseurl}/api/user/me`;
-      const url = `${baseurl}/api/user/posts`;
-      const userPosts = await getData(url, token);
-      const data = await userPosts?.json();
-      // setUserState({...data.user, isUserAcc: true});
-      for(let i = 0; i < data.posts.length; i++) {
-        console.log("The posts are:", data.posts[i].media_items)
-      }
-      setPosts(data.posts);
-      // dispatch(setUser(data.user));
-    }
-
     //get the data from the redux store
     //add an if condition here to check the user variable and if the user is null then get the data
     //from the redux store
-    getUserData();
+    // getUserPosts();
   }, []);
 
   return (
@@ -71,7 +55,7 @@ export default function Profile() {
             <TabSwitch>
               {/* We are doing overfetching here since we only want the post id
               and the media url(s) instead of the entire post and media objects */}
-              <ShowPosts data={posts} numColumns={3} />
+              <ShowPosts numColumns={3}/>
             </TabSwitch>
           </View>
         </View>

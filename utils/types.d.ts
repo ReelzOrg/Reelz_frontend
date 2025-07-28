@@ -103,6 +103,7 @@ export interface PostWithMediaObject {
   createdAt: string;
   updatedAt: string;
   media_items: MediaItem[];
+  isEmpty?: boolean;
   // mediaUrl: string;
   // mediaType: string;
 }
@@ -113,4 +114,5 @@ export interface MediaItem {
   media_type: string;
   position: number;
   updated_at: string;
+  media_alt?: string;
 }

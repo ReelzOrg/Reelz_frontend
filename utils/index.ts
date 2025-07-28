@@ -37,7 +37,6 @@ export async function postData(url: string, data: {}, token?: string | null, con
     console.log(err);
     return null;
   }
-
 }
 
 export async function getData(url: string, token?: string | null) {
