@@ -210,12 +210,13 @@ export default function RegisterScreen() {
                 if (userDP && !userDP.uploaded) { /**user img could not be saved in the s3 bucket */ }
                 // else { setUserData({...userData, imgUrl: userDP?.userImgURL}) }
                 let response = await postData(`${baseurl}/api/auth/register`, { ...userData, imgUrl: userDP?.userImgURL });
+                const authRes = await response?.json();
                 // console.log(response);
 
-                if (response.success) {
-                  saveToken(response.token, "reelzUserToken");
-                  dispatch(setJwtToken(response.token))
-                  dispatch(setUser(response.user))
+                if (authRes.success) {
+                  saveToken(authRes.token, "reelzUserToken");
+                  dispatch(setJwtToken(authRes.token))
+                  dispatch(setUser(authRes.user))
                   router.replace('/(tabs)/home');
                 } else {
                   console.log("The user was NOT saved")

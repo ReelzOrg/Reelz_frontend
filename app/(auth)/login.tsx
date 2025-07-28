@@ -76,13 +76,14 @@ export default function LoginScreen() {
               if (!loginForm.email) { console.log("Email is required"); return; }
               else if (!isEmailValid(loginForm.email)) { console.log("email is not valid"); return; }
 
-              let response = await postData(`${baseurl}/api/auth/login`, loginForm);
-              console.log(response)
+              const response = await postData(`${baseurl}/api/auth/login`, loginForm);
+              const authRes = await response?.json();
+              console.log(authRes)
 
-              if (response.success) {
-                saveToken(response.token, "reelzUserToken");
-                dispatch(setUser(response.user))
-                dispatch(setJwtToken(response.token))
+              if (authRes.success) {
+                saveToken(authRes.token, "reelzUserToken");
+                dispatch(setUser(authRes.user))
+                dispatch(setJwtToken(authRes.token))
 
                 router.replace('/(tabs)/home');
               } else {

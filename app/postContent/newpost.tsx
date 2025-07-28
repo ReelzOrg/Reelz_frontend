@@ -140,7 +140,6 @@ export default function NewPost() {
               mimeType: postMedia.map((post) => post.mediaType == "photo" ? "image/jpeg" : "video/mp4"),
               name: postMedia.map((post) => `post_${post.id}-${sameMediaCount++}`)
             },
-              // postMedia.map((post) => ({ uri: post.uri, name: `post_${post.id}`, mimeType: post.mediaType == "photo" ? "image/jpeg" : "video/mp4" })),
               `${baseurl}/api/user/${_id}/save-post-media`, { caption: caption, mediaUrl: [] }, token);
             // const userPost = await uploadTextAndMedia(
             //   `${baseurl}/api/user/${_id}/save-post-media`,
@@ -153,10 +152,8 @@ export default function NewPost() {
 
           if(userPost?.uploaded) {
             //make a post request to notify the backend
-            //i will get the userImgURL key in the return value from uploadImagetoS3 or uploadManyToS3
-            const notifyBackend = await postData(`${baseurl}/api/user/${_id}/process-media`, {toProcessUrls: userPost.userImgURL}, token);
-            const backendRes = await notifyBackend?.json();
-            console.log("NOTIFY BACKEND RESPONSE", backendRes);
+            //we dont have to wait for the processing to complete hence no await
+            postData(`${baseurl}/api/user/${_id}/process-media`, {toProcessUrls: userPost.userImgURL, uploadType: "post", post_id: userPost.post_id}, token);
             router.replace("/(tabs)/profile");
           } else {
             router.back();

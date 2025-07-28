@@ -27,9 +27,15 @@ export default function Index() {
 
         //get basic data for the user
         const loggedInUser = await getData(`${baseurl}/api/user/`, token);
-        const userData = await loggedInUser?.json();
-        // console.log("userData is:", userData);
-        dispatch(setUser(userData.user[0]))
+
+        if(loggedInUser) {
+          const userData = await loggedInUser?.json();
+
+          //save the user data in Secure Store if it doesnt exist to access it without internet next time.
+          //Although we still want to request the server for latest data first
+          saveToken(JSON.stringify(userData.user[0]), 'user');
+          dispatch(setUser(userData.user[0]))
+        }
 
         //also check the validty of the token by sending the token to the server
         //if the token has been tampered with then redirect the user to the login page

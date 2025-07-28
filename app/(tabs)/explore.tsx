@@ -8,9 +8,8 @@ import { useSelector } from "react-redux";
 
 import { SearchBar, SearchedAccTile, TextField } from "@/components";
 import { useTheme } from "@/hooks/useTheme";
-import { getData } from "@/utils";
+import { getData, postData } from "@/utils";
 import { MinUserObject } from "@/utils/types";
-
 
 export default function Explore() {
   const baseurl = process.env.EXPO_PUBLIC_BASE_URL || "http://192.168.252.240:3000";
@@ -19,6 +18,9 @@ export default function Explore() {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [isSearching, setIsSearching] = useState<boolean>(false);
   const [searchedUsers, setSearchedUsers] = useState<MinUserObject[]>();
+
+  const _id = useSelector((state: any) => state.user._id);
+  const token = useSelector((state: any) => state.reelzUserToken.jwtToken);
 
   //TODO: create a separate search api for the frontend
   async function search(searchTerm: string) {
@@ -67,6 +69,19 @@ export default function Explore() {
           : (
             <View style={{justifyContent: "center"}}>
               <Text style={{color: theme.text}}>Explore !</Text>
+              <TouchableOpacity onPress={async () => {
+                const res = await postData(`${baseurl}/api/user/${_id}/process-media`, {toProcessUrls: [
+                  "https://reelzapp.s3.us-east-1.amazonaws.com/userPosts/44938b73-afca-4cf9-a298-bd6c5a7bda46/97f5cd4d-e515-4775-b7b6-baf649f6c5c5/post_1000000046-0",
+                  // "https://reelzapp.s3.us-east-1.amazonaws.com/userPosts/44938b73-afca-4cf9-a298-bd6c5a7bda46/97f5cd4d-e515-4775-b7b6-baf649f6c5c5/post_1000000041-1",
+                  // "https://reelzapp.s3.us-east-1.amazonaws.com/userPosts/44938b73-afca-4cf9-a298-bd6c5a7bda46/97f5cd4d-e515-4775-b7b6-baf649f6c5c5/post_1000000044-2",
+                  // "https://reelzapp.s3.us-east-1.amazonaws.com/userPosts/44938b73-afca-4cf9-a298-bd6c5a7bda46/97f5cd4d-e515-4775-b7b6-baf649f6c5c5/post_1000000045-3"
+                ], uploadType: "post", post_id: "97f5cd4d-e515-4775-b7b6-baf649f6c5c5"}, token);
+                // console.log(res);
+                const data = await res?.json();
+                console.log(data);
+              }}>
+                <Text style={{color: theme.text, padding: 5, borderRadius: 5, borderWidth: 2, borderColor: "red"}}>Test</Text>
+              </TouchableOpacity>
             </View>
           )
         }

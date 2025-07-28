@@ -1,5 +1,8 @@
 # Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
 
+# vs code
+.vscode/
+
 # dependencies
 node_modules/
 
@@ -8,6 +11,7 @@ node_modules/
 dist/
 web-build/
 expo-env.d.ts
+test.tsx
 
 # Native
 *.orig.*
@@ -31,6 +35,7 @@ yarn-error.*
 
 # local env files
 .env*.local
+.env
 
 # typescript
 *.tsbuildinfo
